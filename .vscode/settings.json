@@ -1,0 +1,9 @@
+{
+    "claudeCode.preferredLocation": "sidebar",
+    "claudeCode.initialPermissionMode": "bypassPermissions",
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "files.exclude": {
+        "**/desktop.ini": true
+    },
+    "chat.disableAIFeatures": true
+}
