@@ -1,5 +1,15 @@
 # Development Rules
 
+---
+## ⚠️ NGÔN NGỮ / LANGUAGE REQUIREMENT
+
+**QUAN TRỌNG NHẤT - TOP PRIORITY:**
+- **LUÔN trả lời và giao tiếp bằng TIẾNG VIỆT**
+- **LUÔN tạo nội dung (kịch bản, báo cáo, kế hoạch) bằng TIẾNG VIỆT**
+- **CHỈ dùng tiếng Anh cho: code, tên file, tên biến, technical terms**
+
+---
+
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
 **IMPORTANT:** You ALWAYS follow these principles: **YAGNI (You Aren't Gonna Need It) - KISS (Keep It Simple, Stupid) - DRY (Don't Repeat Yourself)**
 

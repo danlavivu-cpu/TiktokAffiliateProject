@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+## ⚠️ NGÔN NGỮ / LANGUAGE REQUIREMENT
+
+**QUAN TRỌNG - IMPORTANT:**
+- **Luôn trả lời bằng TIẾNG VIỆT trong mọi trường hợp**
+- **Tất cả nội dung, báo cáo, kịch bản, kế hoạch phải viết bằng TIẾNG VIỆT**
+- **Chỉ sử dụng tiếng Anh cho: tên biến, tên file, code, technical terms khi cần thiết**
+- **Always respond in VIETNAMESE for all communications**
+- **All content, reports, scripts, plans must be written in VIETNAMESE**
+- **Use English only for: variable names, file names, code, technical terms when necessary**
+
+---
+
 ## Project Overview
 
 TikTok Shop affiliate marketing workspace — quản lý sản phẩm, kịch bản video, research, data và vận hành đội nhóm.
@@ -57,5 +70,3 @@ TiktokAffiliateProject/
 ## Cấu trúc video chuẩn
 
 Mọi kịch bản trong `scripts/` theo cấu trúc: **HOOK (0-3s) → PROBLEM (3-8s) → SOLUTION (8-15s) → DEMO (15-40s) → CTA (40-60s)**
-
-# IMPORTANT (Quan Trọng): Luôn trả lời bằng tiếng việt nam
