@@ -91,3 +91,69 @@ Affiliate reports go to `assets/reports/performance/{date}-affiliate-program.md`
 | Inactive affiliates | Monthly check-ins + content support |
 | Brand bidding | Explicit TOS prohibition + monitoring |
 | Poor conversion | Provide better landing pages + training |
+
+---
+
+## TikTok Shop Affiliate (Vietnam Market)
+
+TikTok Shop sử dụng mô hình CPS (Cost Per Sale). Creator quảng bá sản phẩm qua video/livestream, kiếm hoa hồng khi có đơn.
+
+### Commission Models (TikTok Shop)
+
+| Model | Range | Best For |
+|-------|-------|----------|
+| Open Collaboration | 1-80% GMV | Mở cho tất cả creators |
+| Target Collaboration | 1-80% GMV | Invite-only, creator cụ thể |
+| Flat Fee | Cố định/video | Awareness, brand content |
+
+### Vietnam Platform Fees (2026)
+
+| Fee Type | Rate |
+|----------|------|
+| Standard commission | 3-4% |
+| Shop Mall | 5.78-7.7% |
+| Order Processing | 3,000 VND/đơn |
+| Products < 100K VND | +3% phụ phí |
+
+### WIN Product Scoring (100 points)
+
+| Criteria | Points |
+|----------|--------|
+| Commission ≥ 20% | 30 |
+| Rating ≥ 4.5 stars | 20 |
+| Price 100K-500K VND | 15 |
+| Bestseller rank | 15 |
+| Free sample | 10 |
+| Visual appeal | 10 |
+
+≥ 70 → Test | < 50 → Skip | Check NRR < 2x category average
+
+### Operational Rules
+
+- **80/20**: 80% proven products, 20% new tests
+- **Stop rule**: 3 videos < 500 views OR conversion drops > 50%
+- **Spark Ads trigger**: Organic > 10K views AND confirmed orders
+- **Post frequency**: 2-3 videos/day, peak 11h-13h & 19h-22h
+- **Livestream**: 2-3x/week, 3-tier products (loss-leader/mid/premium)
+
+### Content Strategy (5 Formats)
+
+1. **Unboxing** — First impression, curiosity hook → follow CTA
+2. **Honest Review** — 3 likes + 1 small dislike → trust building
+3. **Before/After** — Visual proof, comparison → FOMO
+4. **Tutorial** — Step-by-step + tips → save + share
+5. **Storyline** — Personal story + product placement → viral
+
+All scripts: **HOOK (0-3s) → PROBLEM (3-8s) → SOLUTION (8-15s) → DEMO (15-40s) → CTA (40-60s)**
+
+### TikTok-Specific KPIs
+
+| Cadence | Metrics |
+|---------|---------|
+| Daily | GMV, Revenue, Orders, AOV |
+| Weekly | CAC, CTR (5-8%), Views, Retention |
+| Monthly | Top posts, Audience patterns |
+
+### References
+
+- [TikTok Shop Vietnam Policies](references/tiktok-shop-vietnam.md) - Fees, compliance, CHR system

@@ -70,3 +70,69 @@ TiktokAffiliateProject/
 ## Cấu trúc video chuẩn
 
 Mọi kịch bản trong `scripts/` theo cấu trúc: **HOOK (0-3s) → PROBLEM (3-8s) → SOLUTION (8-15s) → DEMO (15-40s) → CTA (40-60s)**
+
+5 format kịch bản: (1) Unboxing + First Impression (2) Honest Review sau dùng (3) Before/After hoặc So sánh (4) Tutorial/Hướng dẫn (5) Storyline/Đời thường
+
+## Khung chấm điểm WIN (tổng 100 điểm)
+
+| Tiêu chí | Điểm |
+|----------|------|
+| Hoa hồng ≥ 20% | 30 |
+| Đánh giá ≥ 4.5 sao | 20 |
+| Giá 100K-500K VND | 15 |
+| Bestseller rank cao | 15 |
+| Free sample available | 10 |
+| Visual appeal (dễ quay video) | 10 |
+
+- ≥ 70 điểm → Ưu tiên test
+- < 50 điểm → Loại hoặc chờ
+- Kiểm tra thêm: NRR (< 2x trung bình danh mục), wow factor, niche fit với kênh
+
+## Thuật toán TikTok 2026
+
+Tín hiệu xếp hạng (theo thứ tự ưu tiên):
+1. **Shares** — mạnh nhất 2026
+2. **Saves** — giữ video trên FYP nhiều ngày
+3. **Completion Rate & Watch Time**
+4. **Comments & Likes**
+5. **Video Information** (captions, sounds, hashtags)
+
+Content mix tối ưu: 70% giá trị/giải trí, 20% tương tác cộng đồng (Duets/Stitches), 10% quảng bá trực tiếp
+
+Creator Health Rating (CHR): Từ 01/2026, mỗi creator bắt đầu 200 điểm. Post 5+ video non-interactive/7 ngày → bị giới hạn posting.
+
+## Spark Ads & VSA
+
+- Chỉ boost video organic > 10,000 views VÀ đã có đơn
+- Video raw/authentic convert tốt hơn video chuyên nghiệp
+- ROAS > 2x → tăng budget | 1-2x → giữ, tối ưu | < 1x sau 3 ngày → dừng
+- VSA conversion rate: 10%+ (standard ads chỉ 0.46-2.4%)
+
+## Livestream selling
+
+- Chuẩn bị 3 tầng sản phẩm: Loss-leader (giá rẻ), Mid-range (lợi nhuận), Premium (high-margin)
+- Dành 5-10 phút/sản phẩm, trả lời comment real-time, dùng countdown timer
+- Conversion LIVE: 3-5x video thường, sales lift 200-300% trong 24h sau
+
+## KPIs theo dõi
+
+- **Hàng ngày**: GMV, Revenue, Order volume, AOV
+- **Hàng tuần**: CAC, CTR (target 5-8%), Video views, Retention graphs
+- **Hàng tháng**: Top-performing posts, Audience patterns, Efficiency metrics
+- **Báo cáo tuần**: Tổng views/đơn/GMV, Top 3 video, Sản phẩm cần dừng, Quyết định tuần tới
+
+## Lịch thời vụ Việt Nam
+
+- **Q1**: Tết Nguyên Đán (chuẩn bị từ T12), Valentine 14/2, 8/3
+- **Q2**: 30/4-1/5, Ngày của Mẹ, Hè (chống nắng, du lịch, giải nhiệt)
+- **Q3**: Back to School (T8-9), Trung Thu
+- **Q4**: 20/10, 11.11, 12.12, Giáng Sinh — MÙA VÀNG
+
+Chuẩn bị content trước mỗi dịp ít nhất 2-3 tuần.
+
+## Chính sách TikTok Shop VN 2026
+
+- Platform commission: 3-4% (standard), 5.78-7.7% (Shop Mall)
+- Order Processing Fee: 3,000 VND/đơn
+- Sản phẩm < 100K VND chịu thêm ~3%
+- Tuân thủ: Không bán sản phẩm cấm, claim phải đúng sự thật
