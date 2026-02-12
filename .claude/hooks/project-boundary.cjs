@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 /**
- * project-boundary.cjs - Block file operations outside project root
+ * project-boundary.cjs - Block WRITE operations outside project root
  *
- * Blocks ALL file operations (read + write) targeting paths outside
- * CLAUDE_PROJECT_DIR, including Glob, Grep, Read, Edit, Write, MCP filesystem.
+ * Only blocks write/modify tools (Edit, Write, MultiEdit, NotebookEdit)
+ * targeting paths outside CLAUDE_PROJECT_DIR.
+ *
+ * Read-only tools (Read, Glob, Grep) are allowed outside the boundary
+ * because subagents need to read temp output files and system paths.
+ * Bash is excluded because it has its own sandbox and detecting
+ * write intent from command strings is unreliable.
  *
  * Exit Codes: 0 = allowed, 2 = blocked
  */
@@ -12,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const { extractFromToolInput } = require('./scout-block/path-extractor.cjs');
 
-const BOUNDARY_TOOLS = ['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Bash', 'Glob', 'Grep', 'Read'];
+const BOUNDARY_TOOLS = ['Edit', 'Write', 'MultiEdit', 'NotebookEdit'];
 
 /**
  * Get normalized project root (lowercase, forward slashes)
@@ -85,7 +90,7 @@ function formatBlockMessage(blockedPath, projectRoot, toolName) {
   \x1b[33mPath:\x1b[0m ${blockedPath}
   \x1b[33mBoundary:\x1b[0m ${projectRoot}
 
-  File operations outside the project root are blocked.
+  Write operations outside the project root are blocked.
   \x1b[34mTo fix:\x1b[0m Use a path within the project directory.
 `;
 }
