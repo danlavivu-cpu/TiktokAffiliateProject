@@ -2,7 +2,7 @@
   "includeCoAuthoredBy": false,
   "statusLine": {
     "type": "command",
-    "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/statusline.cjs",
+    "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/statusline.cjs",
     "padding": 0
   },
   "hooks": {
@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/session-init.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-init.cjs"
           }
         ]
       }
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/subagent-init.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-init.cjs"
           }
         ]
       },
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/brand-guidelines-reminder.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/brand-guidelines-reminder.cjs"
           }
         ]
       },
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/campaign-tracking.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/campaign-tracking.cjs"
           }
         ]
       },
@@ -50,11 +50,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/approval-workflow.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/approval-workflow.cjs"
           },
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/subagent-init.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-init.cjs"
           }
         ]
       }
@@ -64,11 +64,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/dev-rules-reminder.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/dev-rules-reminder.cjs"
           },
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/usage-context-awareness.cjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/usage-context-awareness.cjs",
             "timeout": 30
           }
         ]
@@ -80,7 +80,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/descriptive-name.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/descriptive-name.cjs"
           }
         ]
       },
@@ -89,15 +89,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/project-boundary.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/project-boundary.cjs"
           },
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/scout-block.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/scout-block.cjs"
           },
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/privacy-block.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/privacy-block.cjs"
           }
         ]
       }
@@ -108,7 +108,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/write-compact-marker.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/write-compact-marker.cjs"
           }
         ]
       }
@@ -119,7 +119,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"%CLAUDE_PROJECT_DIR%\"/.claude/hooks/session-end.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-end.cjs"
           }
         ]
       }
