@@ -1,6 +1,6 @@
 ---
-name: {{agent-name}}
-description: Use this agent when {{specific trigger condition}}. Examples:\n\n<example>\nContext: {{situation}}\nuser: "{{user message}}"\nassistant: "{{response showing delegation to this agent}}"\n<commentary>\n{{Why this agent is appropriate}}\n</commentary>\n</example>
+name: "agent-name-placeholder"
+description: "Use this agent when a specific trigger condition is met."
 model: sonnet
 ---
 

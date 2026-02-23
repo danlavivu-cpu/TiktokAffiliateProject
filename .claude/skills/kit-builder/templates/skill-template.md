@@ -1,6 +1,6 @@
 ---
-name: {{skill-name}}
-description: {{When Claude should use this skill. Be specific about triggers.}}
+name: "skill-name"
+description: "When Claude should use this skill. Be specific about triggers."
 license: MIT
 ---
 

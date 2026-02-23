@@ -1,6 +1,6 @@
 ---
-description: {{Short description of command}}
-argument-hint: {{[arg1] [arg2]}}
+description: "Short description of command"
+argument-hint: "[arg1] [arg2]"
 ---
 
 💡💡
