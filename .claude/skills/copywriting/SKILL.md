@@ -1,84 +1,60 @@
 ---
 name: copywriting
-description: Conversion copywriting formulas, headline templates, email copy patterns, landing page structures, CTA optimization, and writing style extraction. Activate for writing high-converting copy, crafting headlines, email campaigns, landing pages, or applying custom writing styles from assets/writing-styles/ directory.
-license: MIT
+version: 1.0.0
+description: '[Content] Create high-converting copy for marketing materials, social media, landing pages, email campaigns, and product descriptions. Triggers on: copywriting, marketing copy, social media post, landing page copy, email campaign, product description.'
+allowed-tools: Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 ---
 
-# Copywriting
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
 
-Formulas, templates, patterns, and writing styles for high-converting copy.
+## Quick Summary
 
-## When to Use
+**Goal:** Create engagement-driven copy that captures attention and drives action.
 
-- Writing headlines/subject lines, landing page copy, email campaigns
-- Social posts, product descriptions, CTA optimization, A/B variations
-- Applying custom writing styles from user documents
+**Workflow:**
 
-## Writing Styles
+1. **Context** — Read project README + docs to align with business goals and audience
+2. **Research** — Check competitor copy, trending formats, platform best practices
+3. **Write** — Lead with hook, use pattern interrupts, end with clear CTA
+4. **Deliver** — Primary version + 2-3 alternatives + rationale + A/B test suggestions
 
-Load: `references/writing-styles.md` | Full catalog: `assets/writing-styles/default.md` (50 styles)
+**Key Rules:**
 
-**Extract styles from multi-format files:**
-```bash
-python .claude/skills/copywriting/scripts/extract-writing-styles.py --list        # List files
-python .claude/skills/copywriting/scripts/extract-writing-styles.py --style <name> # Extract style
-```
+- Brutal honesty over hype — no corporate jargon
+- Specificity wins ("47% increase" beats "boost results")
+- Hook first — first 5 words determine if they read 50
+- Every word must earn its place — read aloud, pass the "so what?" test
 
-**Formats:** `.md` `.txt` `.pdf` `.docx` `.xlsx` `.pptx` `.jpg` `.png` `.mp4` (docs/media need `GEMINI_API_KEY`)
+---
 
-## Copy Formulas
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
 
-Load: `references/copy-formulas.md`
+## Writing Principles
 
-| Formula | Structure | Best For |
-|---------|-----------|----------|
-| AIDA | Attention → Interest → Desire → Action | Landing pages, ads |
-| PAS | Problem → Agitate → Solution | Email, sales pages |
-| BAB | Before → After → Bridge | Testimonials, case studies |
-| 4Ps | Promise → Picture → Proof → Push | Long-form sales |
-| 4Us | Urgent + Unique + Useful + Ultra-specific | Headlines |
-| FAB | Feature → Advantage → Benefit | Product descriptions |
+1. **User-Centric**: Write for the reader's benefit, not the brand's ego
+2. **Conversational**: Write like texting a smart friend, not a press release
+3. **Scannable**: Headline → Subheadline → Body → CTA. Each layer works standalone.
+4. **Evidence-Based**: Leverage social proof — numbers, testimonials, case studies
 
-## Headlines
+## Copy Frameworks
 
-Load: `references/headline-templates.md`
+- **AIDA**: Attention → Interest → Desire → Action
+- **PAS**: Problem → Agitate → Solution
+- **BAB**: Before → After → Bridge
+- **4 Ps**: Promise, Picture, Proof, Push
 
-Patterns: "How to [X] without [Y]" • "[Number] ways to [benefit]" • "The secret to [outcome]" • "Why [belief] is wrong"
+## Platform Guidelines
 
-## Email Copy
+| Platform      | Key Rule                                                             |
+| ------------- | -------------------------------------------------------------------- |
+| Twitter/X     | First 140 chars critical. Avoid hashtags. Thread for stories.        |
+| LinkedIn      | Professional but not boring. Story-driven. First 2 lines hook.       |
+| Landing Pages | Hero = promise outcome. Bullets = benefits not features.             |
+| Email         | Subject = curiosity/urgency. Body = scannable. P.S. = reinforce CTA. |
 
-Load: `references/email-copy.md`
+## Output Format
 
-Subject lines: Curiosity gap • Benefit-driven • Question • Urgency
-
-## Landing Pages & CTAs
-
-Load: `references/landing-page-copy.md` | `references/cta-patterns.md`
-
-Hero: Headline (promise) → Subheadline (how) → CTA (action) → Social proof
-CTAs: "Start [verb]ing" • "Get [benefit]" • "Yes, I want [benefit]"
-
-## References
-
-| File | Purpose |
-|------|---------|
-| `references/writing-styles.md` | 30 writing styles quick reference |
-| `references/copy-formulas.md` | AIDA, PAS, BAB, 4Ps, FAB formulas |
-| `references/headline-templates.md` | Headline patterns & templates |
-| `references/email-copy.md` | Email copy patterns |
-| `references/landing-page-copy.md` | Landing page structure |
-| `references/cta-patterns.md` | CTA optimization |
-| `references/power-words.md` | Power words by emotion |
-| `references/social-media-copy.md` | Platform-specific copy |
-| `scripts/extract-writing-styles.py` | Extract styles from multi-format files (PDF, DOCX, images) |
-| `templates/copy-brief.md` | Creative brief template |
-
-## Agent Integration
-
-**Primary:** copywriter | **Related:** brand-guidelines, content-marketing, email-marketing
-
-## Best Practices
-
-1. Lead with benefit, not feature | 2. One CTA per piece
-3. Specificity > vague claims | 4. Read aloud—if awkward, rewrite
-5. Test headlines first | 6. Match copy to awareness level
+1. **Primary Version** — Strongest recommendation
+2. **Alternative Versions** — 2-3 variations testing different angles
+3. **Rationale** — Why this approach works
+4. **A/B Test Suggestions** — What to test if running experiments

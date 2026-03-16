@@ -1,8 +1,8 @@
 # Telegram Notification Hook Setup
 
-Get Telegram notifications when Claude Code sessions complete.
+## Quick Start (Unified System - Recommended)
 
-## Quick Start
+The new unified notification system routes to all configured providers automatically.
 
 ### 1. Set Environment Variables
 
@@ -13,27 +13,9 @@ TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_CHAT_ID=your_chat_id
 ```
 
-### 2. Add Hook to settings.json
+### 2. Enable in settings.json
 
-Add to your `.claude/settings.json` (project) or `~/.claude/settings.json` (global):
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/notifications/notify.cjs"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+Hooks are already configured in `.claude/settings.json`. The unified system is enabled by default for Stop, SubagentStop, and AskUserPrompt events.
 
 ### 3. Test
 
@@ -44,9 +26,9 @@ echo '{"hook_event_name":"Stop","cwd":"'"$(pwd)"'","session_id":"test123"}' | \
 
 ---
 
-## Legacy Bash Scripts (Deprecated)
+## Legacy Bash Script Setup
 
-The original `telegram_notify.sh` is **deprecated** due to jq PATH issues in Claude Code's subprocess environment. Use `notify.cjs` instead.
+The original `telegram_notify.sh` is still available for backward compatibility. See below for legacy setup.
 
 ---
 
@@ -306,7 +288,7 @@ Tools Used:
    3 Read
    2 Bash
    2 Write
-   1 TodoWrite
+   1 TaskCreate
    1 Grep
    1 Glob
 ```
@@ -387,7 +369,7 @@ Tools Used:
    6 Read
    3 Write
    2 Bash
-   1 TodoWrite
+   1 TaskCreate
 ```
 
 Files Modified:

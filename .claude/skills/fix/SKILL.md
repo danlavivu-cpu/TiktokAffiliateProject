@@ -1,72 +1,168 @@
 ---
-name: fixing
-description: Fix bugs, errors, test failures, CI/CD issues with intelligent routing. Use when reporting bugs, type errors, log errors, UI issues, code problems. Auto-classifies complexity and activates relevant skills.
+name: fix
 version: 1.0.0
+description: '[Implementation] Analyze and fix issues [INTELLIGENT ROUTING]'
 ---
 
-# Fixing
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
 
-Unified skill for fixing issues of any complexity with intelligent routing.
+**Prerequisites:** **MUST READ** `.claude/skills/shared/understand-code-first-protocol.md` AND `.claude/skills/shared/evidence-based-reasoning-protocol.md` before executing.
 
-## Step 0: Mode Selection
+- `docs/project-reference/domain-entities-reference.md` — Domain entity catalog, relationships, cross-service sync (read when task involves business entities/models)
 
-**First action:** If there is no "auto" keyword in the request, use `AskUserQuestion` to determine workflow mode:
+> **Evidence Gate:** MANDATORY IMPORTANT MUST — every claim, finding, and recommendation requires `file:line` proof or traced evidence with confidence percentage (>80% to act, <80% must verify first).
 
-| Option | Recommend When | Behavior |
-|--------|----------------|----------|
-| **Autonomous** | Simple/moderate issues | Auto-approve if score >= 9.5 & 0 critical |
-| **Human-in-the-loop** | Critical/production code | Pause for approval at each step |
-| **Quick** | Type errors, lint, trivial bugs | Fast debug → fix → review cycle |
+> **Process Discipline:** MUST READ `.claude/skills/shared/red-flag-stop-conditions-protocol.md` — STOP after 3+ failed fix attempts, when fixes reveal new problems in different places.
 
-See `references/mode-selection.md` for AskUserQuestion format.
+> **External Memory:** For complex or lengthy work (research, analysis, scan, review), write intermediate findings and final results to a report file in `plans/reports/` — prevents context loss and serves as deliverable.
 
-## Step 1: Complexity Assessment
+## Quick Summary
 
-Classify before routing. See `references/complexity-assessment.md`.
+**Goal:** Analyze issues and intelligently route to the best-matching specialized fix command (fix-ci, fix-fast, fix-hard, fix-ui, etc.).
 
-| Level | Indicators | Workflow |
-|-------|------------|----------|
-| **Simple** | Single file, clear error, type/lint | `references/workflow-quick.md` |
-| **Moderate** | Multi-file, root cause unclear | `references/workflow-standard.md` |
-| **Complex** | System-wide, architecture impact | `references/workflow-deep.md` |
-| **Parallel** | 2+ independent issues | Parallel `fullstack-developer` agents |
+**Workflow:**
 
-## Skill/Subagent Activation Matrix
+1. **Check** — Look for existing plan; if found, route to `/code <plan>`
+2. **Classify** — Match issue type (type errors, UI, CI, logs, tests, general)
+3. **Route** — Delegate to specialized fix variant based on classification
 
-See `references/skill-activation-matrix.md` for complete matrix.
+**Key Rules:**
 
-**Always activate:** `debugging` (all workflows)
-**Conditional:** `problem-solving`, `sequential-thinking`, `brainstorming`, `context-engineering`
-**Subagents:** `debugger`, `researcher`, `planner`, `code-reviewer`, `tester`, `Bash`
-**Parallel:** Multiple `Explore` agents for scouting, `Bash` agents for verification
+- Debug Mindset is non-negotiable: every claim needs traced proof with `file:line` evidence
+- Never assume first hypothesis is correct — verify with actual code traces
+- Parent skill for all fix-\* variants; routes based on issue keywords
 
-## Output Format
+### Frontend/UI Context (if applicable)
 
-Unified step markers:
-```
-✓ Step 0: [Mode] selected - [Complexity] detected
-✓ Step 1: Root cause identified - [summary]
-✓ Step 2: Fix implemented - [N] files changed
-✓ Step 3: Tests [X/X passed]
-✓ Step 4: Review [score]/10 - [status]
-✓ Step 5: Complete - [action taken]
-```
+When this task involves frontend or UI changes, **MUST READ** `.claude/skills/shared/ui-system-context.md` and the following docs:
 
-## References
+- Component patterns: `docs/project-reference/frontend-patterns-reference.md`
+- Styling/BEM guide: `docs/project-reference/scss-styling-guide.md`
+- Design system tokens: `docs/project-reference/design-system/README.md`
 
-Load as needed:
-- `references/mode-selection.md` - AskUserQuestion format for mode
-- `references/complexity-assessment.md` - Classification criteria
-- `references/workflow-quick.md` - Quick: debug → fix → review
-- `references/workflow-standard.md` - Standard: full pipeline
-- `references/workflow-deep.md` - Deep: research + brainstorm + plan
-- `references/review-cycle.md` - Review logic (autonomous vs HITL)
-- `references/skill-activation-matrix.md` - When to activate each skill
-- `references/parallel-exploration.md` - Parallel Explore/Bash subagents patterns
+## Variant Decision Guide
 
-**Specialized Workflows:**
-- `references/workflow-ci.md` - GitHub Actions/CI failures
-- `references/workflow-logs.md` - Application log analysis
-- `references/workflow-test.md` - Test suite failures
-- `references/workflow-types.md` - TypeScript type errors
-- `references/workflow-ui.md` - Visual/UI issues (requires design skills)
+| If the issue is...        | Use                 | Why                                         |
+| ------------------------- | ------------------- | ------------------------------------------- |
+| Type errors (TS/C#)       | `/fix-types`        | Specialized for type system errors          |
+| UI/visual bug             | `/fix-ui`           | Includes visual comparison                  |
+| CI/CD pipeline failure    | `/fix-ci`           | Reads pipeline logs, understands CI context |
+| Test failures             | `/fix-test`         | Focuses on test assertions and mocking      |
+| Log-based investigation   | `/fix-logs`         | Parses log files for root cause             |
+| GitHub issue with context | `/fix-issue`        | Reads issue details, links to code          |
+| Simple/obvious fix        | `/fix-fast`         | Skip deep investigation                     |
+| Complex/multi-file bug    | `/fix-hard`         | Uses subagents for parallel investigation   |
+| Multiple independent bugs | `/fix-parallel`     | Parallel fix execution                      |
+| General/unknown           | `/fix` (this skill) | Routes automatically based on keywords      |
+
+## Debug Mindset (NON-NEGOTIABLE)
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
+
+- Do NOT assume the first hypothesis is correct — verify with actual code traces
+- Every root cause claim must include `file:line` evidence
+- If you cannot prove a root cause with a code trace, state "hypothesis, not confirmed"
+- Question assumptions: "Is this really the cause?" → trace the actual execution path
+- Challenge completeness: "Are there other contributing factors?" → check related code paths
+- No "should fix it" without proof — verify the fix addresses the traced root cause
+
+## ⚠️ MANDATORY: Confidence & Evidence Gate
+
+**MANDATORY IMPORTANT MUST** declare `Confidence: X%` with evidence list + `file:line` proof for EVERY claim.
+**95%+** recommend freely | **80-94%** with caveats | **60-79%** list unknowns | **<60% STOP — gather more evidence.**
+
+**Analyze issues and route to specialized fix command:**
+<issues>$ARGUMENTS</issues>
+
+## ⚠️ MANDATORY: Plan Before Fix (NON-NEGOTIABLE)
+
+**MANDATORY IMPORTANT MUST** — Before routing to ANY fix variant, you MUST have a validated plan. This applies whether running standalone or within a workflow.
+
+**If no plan exists**, you MUST create todo tasks for and execute these steps IN ORDER before proceeding to fix:
+
+1. **`/plan`** — Create an implementation plan for the fix (root cause analysis + fix approach + affected files)
+2. **`/plan-review`** — Auto-review the plan for validity, correctness, and best practices
+3. **`/plan-validate`** — Validate plan with critical questions interview (get user confirmation)
+
+**Only after plan is validated** → proceed to fix routing below.
+
+**If a plan already exists** (markdown plan file in `plans/`) → skip to fix routing.
+
+> **Why:** Fixes without plans lead to incomplete root cause analysis, missed side effects, and regressions. Planning forces the AI to think before acting.
+
+## Decision Tree
+
+**1. Check for existing plan:**
+
+- If markdown plan exists → `/code <path-to-plan>`
+- If NO plan exists → **STOP. Run `/plan → /plan-review → /plan-validate` first** (see section above)
+
+**2. Route by issue type (only after plan exists):**
+
+**A) Type Errors** (keywords: type, typescript, tsc, type error)
+→ `/fix-types`
+
+**B) UI/UX Issues** (keywords: ui, ux, design, layout, style, visual, button, component, css, responsive)
+→ `/fix-ui <detailed-description>`
+
+**C) CI/CD Issues** (keywords: github actions, pipeline, ci/cd, workflow, deployment, build failed)
+→ `/fix-ci <github-actions-url-or-description>`
+
+**D) Test Failures** (keywords: test, spec, jest, vitest, failing test, test suite)
+→ `/fix-test <detailed-description>`
+
+**E) Log Analysis** (keywords: logs, error logs, log file, stack trace)
+→ `/fix-logs <detailed-description>`
+
+**F) Multiple Independent Issues** (2+ unrelated issues in different areas)
+→ `/fix-parallel <detailed-description>`
+
+**G) Complex Issues** (keywords: complex, architecture, refactor, major, system-wide, multiple components)
+→ `/fix-hard <detailed-description>`
+
+**H) Simple/Quick Fixes** (default: small bug, single file, straightforward)
+→ `/fix-fast <detailed-description>`
+
+## Notes
+
+- `detailed-description` = enhanced prompt describing issue in detail
+- If unclear, ask user for clarification before routing
+- Can combine routes: e.g., multiple type errors + UI issue → `/fix-parallel`
+
+## ⚠️ MANDATORY: Post-Fix Verification
+
+**After EVERY fix, you MUST run `/prove-fix` to verify correctness.**
+
+`/prove-fix` builds code proof traces (stack-trace-style) per change, assigns confidence percentages, and produces a ship/block verdict. This is non-negotiable — never skip it. If confidence < 80% on any change, return to investigation.
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements
+
+---
+
+## Workflow Recommendation
+
+> **IMPORTANT MUST:** If you are NOT already in a workflow, use `AskUserQuestion` to ask the user:
+>
+> 1. **Activate `bugfix` workflow** (Recommended) — scout → investigate → debug → plan → plan-review → plan-validate → fix → prove-fix → review → test
+> 2. **Execute `/fix` directly** — still requires `/plan → /plan-review → /plan-validate` before fixing (enforced by Plan Before Fix gate above)
+
+---
+
+## Next Steps
+
+**MANDATORY IMPORTANT MUST** after completing this skill, use `AskUserQuestion` to recommend:
+
+- **"/prove-fix (Recommended)"** — Prove fix correctness with code traces
+- **"/test"** — Run tests to verify fix
+- **"Skip, continue manually"** — user decides
+
+## Closing Reminders
+
+**MANDATORY IMPORTANT MUST** break work into small todo tasks using `TaskCreate` BEFORE starting.
+**MANDATORY IMPORTANT MUST** validate decisions with user via `AskUserQuestion` — never auto-decide.
+**MANDATORY IMPORTANT MUST** add a final review todo task to verify work quality.

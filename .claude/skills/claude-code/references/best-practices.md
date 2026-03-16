@@ -53,7 +53,6 @@ Copy `.claude/.env.example` to `.claude/.env` and fill in:
 
 **What to commit:**
 - `.claude/settings.json`
-- `.claude/commands/`
 - `.claude/skills/`
 - `.claude/hooks.json`
 - `.claude/mcp.json` (without secrets)
@@ -156,19 +155,14 @@ claude plugin install gh:anthropics/official-plugin
 
 Choose appropriate model for task:
 
-**Haiku** - Fast, cost-effective:
+**Sonnet** - Balanced (default for all tasks):
 ```bash
-claude --model haiku "fix typo in README"
-claude --model haiku "format code"
-```
-
-**Sonnet** - Balanced (default):
-```bash
+claude "fix typo in README"
 claude "implement user authentication"
 claude "review this PR"
 ```
 
-**Opus** - Complex tasks:
+**Opus** - Complex reasoning and architecture:
 ```bash
 claude --model opus "architect microservices system"
 claude --model opus "optimize algorithm performance"
@@ -181,7 +175,7 @@ Cache repeated context:
 ```typescript
 // Cache large codebase
 const response = await client.messages.create({
-  model: 'claude-sonnet-4-5-20250929',
+  model: 'sonnet',
   system: [
     {
       type: 'text',
@@ -243,7 +237,7 @@ claude analytics cost --group-by project
 Create consistent slash commands:
 
 ```markdown
-# .claude/commands/test.md
+# .claude/skills/test/SKILL.md
 Run test suite with coverage report.
 
 Options:
@@ -283,7 +277,7 @@ Use project settings for consistency:
 **.claude/settings.json:**
 ```json
 {
-  "model": "claude-sonnet-4-5-20250929",
+  "model": "sonnet",
   "maxTokens": 8192,
   "outputStyle": "technical-writer",
   "thinking": {
@@ -347,13 +341,13 @@ claude analytics export --format csv > usage.csv
 
 ### Cost Optimization
 
-**Use Haiku for simple tasks:**
+**Use Sonnet as the default for all tasks:**
 ```bash
-# Expensive (Sonnet)
+# Default (Sonnet)
 claude "fix typo in README"
 
-# Cheap (Haiku)
-claude --model haiku "fix typo in README"
+# Complex tasks (Opus)
+claude --model opus "architect microservices system"
 ```
 
 **Enable caching:**
@@ -407,7 +401,7 @@ claude /test
 claude "review authentication implementation"
 
 # 6. Commit
-claude /git:cm
+claude /git-cp
 ```
 
 ### Bug Fixing
@@ -417,13 +411,13 @@ claude /git:cm
 claude /debug "login button not working"
 
 # 2. Fix
-claude /fix:fast "fix login button issue"
+claude /fix-fast "fix login button issue"
 
 # 3. Test
 claude /test
 
 # 4. Commit
-claude /git:cm
+claude /git-cp
 ```
 
 ### Code Review

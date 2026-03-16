@@ -100,7 +100,7 @@ Use `aesthetic` for overall design system guidance and quality evaluation framew
 ### With `chrome-devtools` Skill
 Use `chrome-devtools` to capture full-screen screenshots from inspiration websites for design extraction. Capture at actual viewport size, not full-page scrolls.
 
-### With `ui-styling` Skill
+### With `shadcn-tailwind` Skill
 Generate and analyze assets first, then implement using shadcn/ui + Tailwind with colors/styles that complement the generated imagery.
 
 ### With `web-frameworks` Skill

@@ -639,6 +639,50 @@ function Install-NodeDeps {
         Write-Success "plans-kanban dependencies installed"
     }
 
+    # markdown-to-pdf (md-to-pdf, gray-matter)
+    $mdToPdfPath = Join-Path $ScriptDir "markdown-to-pdf"
+    $mdToPdfPackageJson = Join-Path $mdToPdfPath "package.json"
+    if ((Test-Path $mdToPdfPath) -and (Test-Path $mdToPdfPackageJson)) {
+        Write-Info "Installing markdown-to-pdf dependencies..."
+        Push-Location $mdToPdfPath
+        npm install --quiet
+        Pop-Location
+        Write-Success "markdown-to-pdf dependencies installed"
+    }
+
+    # markdown-to-docx (markdown-docx, gray-matter)
+    $mdToDocxPath = Join-Path $ScriptDir "markdown-to-docx"
+    $mdToDocxPackageJson = Join-Path $mdToDocxPath "package.json"
+    if ((Test-Path $mdToDocxPath) -and (Test-Path $mdToDocxPackageJson)) {
+        Write-Info "Installing markdown-to-docx dependencies..."
+        Push-Location $mdToDocxPath
+        npm install --quiet
+        Pop-Location
+        Write-Success "markdown-to-docx dependencies installed"
+    }
+
+    # docx-to-markdown (mammoth, turndown, turndown-plugin-gfm)
+    $docxToMdPath = Join-Path $ScriptDir "docx-to-markdown"
+    $docxToMdPackageJson = Join-Path $docxToMdPath "package.json"
+    if ((Test-Path $docxToMdPath) -and (Test-Path $docxToMdPackageJson)) {
+        Write-Info "Installing docx-to-markdown dependencies..."
+        Push-Location $docxToMdPath
+        npm install --quiet
+        Pop-Location
+        Write-Success "docx-to-markdown dependencies installed"
+    }
+
+    # pdf-to-markdown (@opendocsg/pdf2md)
+    $pdfToMdPath = Join-Path $ScriptDir "pdf-to-markdown"
+    $pdfToMdPackageJson = Join-Path $pdfToMdPath "package.json"
+    if ((Test-Path $pdfToMdPath) -and (Test-Path $pdfToMdPackageJson)) {
+        Write-Info "Installing pdf-to-markdown dependencies..."
+        Push-Location $pdfToMdPath
+        npm install --quiet
+        Pop-Location
+        Write-Success "pdf-to-markdown dependencies installed"
+    }
+
     # Optional: Shopify CLI (ask user unless auto-confirming)
     $shopifyPath = Join-Path $ScriptDir "shopify"
     if (Test-Path $shopifyPath) {
@@ -695,10 +739,6 @@ function Try-PipInstall {
 # Setup Python virtual environment
 function Setup-PythonEnv {
     Write-Header "Setting Up Python Environment"
-
-    # Suppress pip version check notices that trigger PowerShell NativeCommandError
-    # Set early to affect all pip operations in this function
-    $env:PIP_DISABLE_PIP_VERSION_CHECK = "1"
 
     # Track successful and failed installations
     $successfulSkills = [System.Collections.ArrayList]::new()
@@ -763,8 +803,7 @@ function Setup-PythonEnv {
     # Upgrade pip with prefer-binary
     Write-Info "Upgrading pip..."
     $pipLogFile = Join-Path $LogDir "pip-upgrade.log"
-    $venvPython = Join-Path $VenvDir "Scripts\python.exe"
-    & $venvPython -m pip install --upgrade pip --prefer-binary 2>&1 | Tee-Object -FilePath $pipLogFile
+    pip install --upgrade pip --prefer-binary 2>&1 | Tee-Object -FilePath $pipLogFile
     if ($LASTEXITCODE -eq 0) {
         Write-Success "pip upgraded successfully"
     } else {
@@ -779,8 +818,8 @@ function Setup-PythonEnv {
     Get-ChildItem -Path $ScriptDir -Directory | ForEach-Object {
         $skillName = $_.Name
 
-        # Skip .venv and document-skills
-        if ($skillName -eq ".venv" -or $skillName -eq "document-skills") {
+        # Skip .venv
+        if ($skillName -eq ".venv") {
             return
         }
 
@@ -837,6 +876,40 @@ function Setup-PythonEnv {
             } else {
                 Write-Warning "$skillName test dependencies failed to install"
             }
+        }
+    }
+
+    # Install .claude/scripts requirements (contains pyyaml for generate_catalogs.py)
+    $scriptsReqPath = Join-Path $ScriptDir "..\scripts\requirements.txt"
+    if (Test-Path $scriptsReqPath) {
+        $scriptsLogFile = Join-Path $LogDir "install-scripts.log"
+        Write-Info "Installing .claude/scripts dependencies..."
+
+        $pkgSuccess = 0
+        $pkgFail = 0
+        Get-Content $scriptsReqPath | ForEach-Object {
+            $line = $_.Trim()
+            if ($line -match '^#' -or [string]::IsNullOrWhiteSpace($line)) {
+                return
+            }
+            $line = ($line -split '#')[0].Trim()
+            if ([string]::IsNullOrWhiteSpace($line)) {
+                return
+            }
+
+            if (Try-PipInstall -PackageSpec $line -LogFile $scriptsLogFile) {
+                $pkgSuccess++
+            } else {
+                $pkgFail++
+                Track-Failure -Category "optional" -Name "scripts:${line}" -Reason "Package install failed"
+            }
+        }
+
+        if ($pkgFail -eq 0) {
+            Write-Success ".claude/scripts: all $pkgSuccess packages installed"
+            Track-Success -Category "optional" -Name "scripts"
+        } else {
+            Write-Warning ".claude/scripts: $pkgSuccess installed, $pkgFail failed"
         }
     }
 

@@ -1,3 +1,31 @@
+---
+name: plans-kanban
+version: 1.0.0
+description: '[Planning] Plans dashboard server with progress tracking and timeline visualization.'
+
+allowed-tools: NONE
+---
+
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
+
+## Quick Summary
+
+**Goal:** Visual dashboard server for viewing plan directories with progress tracking and timeline visualization.
+
+**Workflow:**
+
+1. **Start Server** — Point at a plans directory with CLI options
+2. **Browse Dashboard** — View plan cards with progress bars, phase status, activity heatmap
+3. **Inspect Plans** — Gantt-style timeline, priority indicators, issue/branch links
+
+**Key Rules:**
+
+- Requires `npm install` before first use (gray-matter)
+- Use `/kanban` slash command for quick access
+- Scans for directories containing `plan.md` files
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
+
 # plans-kanban
 
 Plans dashboard server with progress tracking and timeline visualization.
@@ -22,6 +50,7 @@ Without installation, you'll get **Error 500** when viewing plan details.
 ## Purpose
 
 Visual dashboard for viewing plan directories with:
+
 - Progress tracking per plan
 - Timeline/Gantt visualization
 - Phase status indicators
@@ -62,6 +91,7 @@ Use `/kanban` for quick access:
 ## Features
 
 ### Dashboard View
+
 - Plan cards with progress bars
 - Phase status breakdown (completed, in-progress, pending)
 - Last modified timestamps
@@ -69,25 +99,27 @@ Use `/kanban` for quick access:
 - Priority indicators
 
 ### Timeline Visualization
+
 - Gantt-style timeline of plans
 - Duration tracking
 - Activity heatmap
 
 ### Design
+
 - Glassmorphism UI with dark mode
 - Responsive grid layout
 - Warm accent colors
 
 ## CLI Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--dir <path>` | Plans directory | - |
-| `--port <number>` | Server port | 3500 |
-| `--host <addr>` | Host to bind (`0.0.0.0` for remote) | localhost |
-| `--open` | Auto-open browser | false |
-| `--background` | Run in background | false |
-| `--stop` | Stop all servers | - |
+| Option            | Description                         | Default   |
+| ----------------- | ----------------------------------- | --------- |
+| `--dir <path>`    | Plans directory                     | -         |
+| `--port <number>` | Server port                         | 3500      |
+| `--host <addr>`   | Host to bind (`0.0.0.0` for remote) | localhost |
+| `--open`          | Auto-open browser                   | false     |
+| `--background`    | Run in background                   | false     |
+| `--stop`          | Stop all servers                    | -         |
 
 ## Architecture
 
@@ -111,14 +143,14 @@ assets/
 
 ## HTTP Routes
 
-| Route | Description |
-|-------|-------------|
-| `/` or `/kanban` | Dashboard view |
-| `/kanban?dir=<path>` | Dashboard for specific directory |
-| `/api/plans` | JSON API for plans data |
-| `/api/plans?dir=<path>` | JSON API for specific directory |
-| `/assets/*` | Static assets |
-| `/file/*` | Local file serving |
+| Route                   | Description                      |
+| ----------------------- | -------------------------------- |
+| `/` or `/kanban`        | Dashboard view                   |
+| `/kanban?dir=<path>`    | Dashboard for specific directory |
+| `/api/plans`            | JSON API for plans data          |
+| `/api/plans?dir=<path>` | JSON API for specific directory  |
+| `/assets/*`             | Static assets                    |
+| `/file/*`               | Local file serving               |
 
 ## Remote Access
 
@@ -126,10 +158,10 @@ When using `--host 0.0.0.0`, the server auto-detects your local network IP:
 
 ```json
 {
-  "success": true,
-  "url": "http://localhost:3500/kanban?dir=...",
-  "networkUrl": "http://192.168.2.75:3500/kanban?dir=...",
-  "port": 3500
+    "success": true,
+    "url": "http://localhost:3500/kanban?dir=...",
+    "networkUrl": "http://192.168.2.75:3500/kanban?dir=...",
+    "port": 3500
 }
 ```
 
@@ -159,3 +191,10 @@ plans/
 **Remote access denied**: Use `--host 0.0.0.0` to bind all interfaces
 
 **PID files**: Located at `/tmp/plans-kanban-*.pid`
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements

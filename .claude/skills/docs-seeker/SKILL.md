@@ -1,8 +1,30 @@
 ---
 name: docs-seeker
-description: "Search technical documentation using executable scripts to detect query type, fetch from llms.txt sources (context7.com), and analyze results. Use when user needs: (1) Topic-specific documentation (features/components/concepts), (2) Library/framework documentation, (3) GitHub repository analysis, (4) Documentation discovery with automated agent distribution strategy"
 version: 3.1.0
+description: '[Documentation] Search technical documentation using executable scripts to detect query type, fetch from llms.txt sources (context7.com), and analyze results. Use when user needs topic-specific documentation, library/framework documentation, GitHub repository analysis, or documentation discovery with automated agent distribution strategy.'
+
+allowed-tools: NONE
 ---
+
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
+
+## Quick Summary
+
+**Goal:** Search and fetch technical documentation using executable scripts with llms.txt standard (context7.com).
+
+**Workflow:**
+
+1. **Detect** — Run `scripts/detect-topic.js` to classify query type (topic-specific vs general)
+2. **Fetch** — Run `scripts/fetch-docs.js` to retrieve documentation with automatic fallback
+3. **Analyze** — Run `scripts/analyze-llms-txt.js` to categorize URLs and recommend agent distribution
+
+**Key Rules:**
+
+- Always execute scripts in order: detect -> fetch -> analyze
+- Scripts handle URL construction and fallback chains automatically; no manual URL building
+- Zero-token overhead: scripts run without context loading
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
 
 # Documentation Discovery via Scripts
 
@@ -32,18 +54,21 @@ Scripts handle URL construction, fallback chains, and error handling automatical
 ## Scripts
 
 **`detect-topic.js`** - Classify query type
+
 - Identifies topic-specific vs general queries
 - Extracts library name + topic keyword
 - Returns JSON: `{topic, library, isTopicSpecific}`
 - Zero-token execution
 
 **`fetch-docs.js`** - Retrieve documentation
+
 - Constructs context7.com URLs automatically
 - Handles fallback: topic → general → error
 - Outputs llms.txt content or error message
 - Zero-token execution
 
 **`analyze-llms-txt.js`** - Process llms.txt
+
 - Categorizes URLs (critical/important/supplementary)
 - Recommends agent distribution (1 agent, 3 agents, 7 agents, phased)
 - Returns JSON with strategy
@@ -76,6 +101,7 @@ Scripts handle URL construction, fallback chains, and error handling automatical
 ## Quick Start
 
 **Topic query:** "How do I use date picker in shadcn?"
+
 ```bash
 node scripts/detect-topic.js "<query>"  # → {topic, library, isTopicSpecific}
 node scripts/fetch-docs.js "<query>"    # → 2-3 URLs
@@ -83,6 +109,7 @@ node scripts/fetch-docs.js "<query>"    # → 2-3 URLs
 ```
 
 **General query:** "Documentation for Next.js"
+
 ```bash
 node scripts/detect-topic.js "<query>"         # → {isTopicSpecific: false}
 node scripts/fetch-docs.js "<query>"           # → 8+ URLs
@@ -95,3 +122,10 @@ cat llms.txt | node scripts/analyze-llms-txt.js -  # → {totalUrls, distributio
 Scripts load `.env`: `process.env` > `.claude/skills/docs-seeker/.env` > `.claude/skills/.env` > `.claude/.env`
 
 See `.env.example` for configuration options.
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements

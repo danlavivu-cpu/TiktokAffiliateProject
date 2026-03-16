@@ -1,131 +1,104 @@
 ---
 name: ai-artist
-description: "Prompt + image gen. 6000+ examples. Dual-option: Standard (Flash) or Creative (Pro). Generate infographics, thumbnails, avatars, product shots with Nano Banana."
-version: 2.2.0
+version: 1.0.0
+description: '[AI & Tools] Write and optimize prompts for AI-generated outcomes across text and image models. Use when crafting prompts for LLMs (Claude, GPT, Gemini), image generators (Midjourney, DALL-E, Stable Diffusion, Imagen, Flux), or video generators (Veo, Runway). Covers prompt structure, style keywords, negative prompts, chain-of-thought, few-shot examples, iterative refinement, and domain-specific patterns for marketing, code, and creative writing.'
+
+allowed-tools: NONE
 license: MIT
 ---
 
-# AI Artist - Prompt Engineering + Image Generation
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
 
-Comprehensive prompt engineering with integrated image generation. Contains 6,000+ curated prompts, dual-option generation workflow, and searchable database with BM25 ranking.
+## Quick Summary
 
-## Dual-Option Workflow
+**Goal:** Write and optimize prompts for AI text, image, and video generation models (Claude, GPT, Midjourney, DALL-E, Stable Diffusion, Flux, Veo).
 
-When generating images, **always offer both options**:
+**Workflow:**
 
-| Option | Model | Best For | Speed |
-|--------|-------|----------|-------|
-| **Standard** | `gemini-2.5-flash-image` | Search-based prompts, known formats | Fast |
-| **Creative** | `gemini-3-pro-image-preview` | Unique art direction, complex scenes | Best quality |
+1. **Identify** — Determine model type (LLM, image, video) and desired outcome
+2. **Structure** — Apply model-specific prompt patterns (Role/Context/Task for LLMs, Subject/Style/Composition for images)
+3. **Refine** — Iterate with A/B testing, style keywords, negative prompts
 
----
+**Key Rules:**
 
-## Quick Start
+- Use clarity, context, structure, and iteration as core principles
+- Apply model-specific syntax (Midjourney `--ar`, SD weighted tokens, etc.)
+- Load reference files for detailed guidance per domain (marketing, code, writing, data)
 
-### Option 1: Standard (Search + Flash)
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
 
-```bash
-# 1. Search for similar prompts
-python3 .claude/skills/ai-artist/scripts/search.py "<keywords>" --domain examples
+# AI Artist - Prompt Engineering
 
-# 2. Generate with Flash model
-.claude/skills/.venv/bin/python3 .claude/skills/ai-multimodal/scripts/gemini_batch_process.py \
-  --task generate --model gemini-2.5-flash-image \
-  --prompt "<adapted_prompt>" --aspect-ratio <ratio> --size 2K --output <path>
+Craft effective prompts for AI text and image generation models.
+
+## Core Principles
+
+1. **Clarity** - Be specific, avoid ambiguity
+2. **Context** - Set scene, role, constraints upfront
+3. **Structure** - Use consistent formatting (markdown, XML tags, delimiters)
+4. **Iteration** - Refine based on outputs, A/B test variations
+
+## Quick Patterns
+
+### LLM Prompts (Claude/GPT/Gemini)
+
+```
+[Role] You are a {expert type} specializing in {domain}.
+[Context] {Background information and constraints}
+[Task] {Specific action to perform}
+[Format] {Output structure - JSON, markdown, list, etc.}
+[Examples] {1-3 few-shot examples if needed}
 ```
 
-### Option 2: Creative (Art Direction + Pro)
+### Image Generation (Midjourney/DALL-E/Stable Diffusion)
 
-```bash
-# Generate with Pro model (4K, complex prompts)
-.claude/skills/.venv/bin/python3 .claude/skills/ai-multimodal/scripts/gemini_batch_process.py \
-  --task generate --model gemini-3-pro-image-preview \
-  --prompt "<creative_prompt>" --aspect-ratio <ratio> --size 4K --output <path>
+```
+[Subject] {main subject with details}
+[Style] {artistic style, medium, artist reference}
+[Composition] {framing, angle, lighting}
+[Quality] {resolution modifiers, rendering quality}
+[Negative] {what to avoid - only if supported}
 ```
 
----
-
-## Arguments
-
-| Arg | Values | Default |
-|-----|--------|---------|
-| `--model` | `gemini-2.5-flash-image` (Standard), `gemini-3-pro-image-preview` (Creative) | Flash |
-| `--aspect-ratio` | `1:1`, `16:9`, `9:16`, `3:4`, `4:3`, `2:3`, `3:2` | `1:1` |
-| `--size` | `1K`, `2K`, `4K` (4K only Pro) | `2K` |
-| `--num-images` | `1-4` | `1` |
-| `--output` | file path | auto |
-
----
-
-## Search Domains
-
-```bash
-python3 .claude/skills/ai-artist/scripts/search.py "<query>" --domain <domain>
-```
-
-| Domain | Use For |
-|--------|---------|
-| `examples` | 6000+ curated prompts (quote cards, bento grids, thumbnails) |
-| `style` | Visual aesthetics (cyberpunk, minimalist, cinematic) |
-| `subject` | Subject tips (portrait, product, landscape) |
-| `platform` | Platform syntax (midjourney, dall-e, sd) |
-
----
-
-## Creative Art Directions
-
-For Creative option, apply unique styles:
-
-| Style | Key Elements |
-|-------|--------------|
-| **Cyberpunk Neon** | Holographic, neon glow, rain, cityscape, Japanese text |
-| **Vaporwave** | Greek statues, sunset grid, Windows 95, chrome, dolphins |
-| **Isometric 3D** | Tilt-shift, miniature diorama, cute buildings, floating island |
-| **Bento Grid** | Apple liquid glass, transparent cards, gradient glow |
-| **Editorial** | Clean white, bold typography, magazine layout |
-
----
-
-## Example Workflow
-
-### User: "Create marketing infographic"
-
-**Standard Option:**
-```bash
-python3 .claude/skills/ai-artist/scripts/search.py "bento grid marketing" --domain examples
-# → Found: "Premium liquid glass Bento grid product infographic"
-# → Adapt prompt, generate with Flash
-```
-
-**Creative Option:**
-```bash
-# Cyberpunk art direction with Pro model
-.claude/skills/.venv/bin/python3 .claude/skills/ai-multimodal/scripts/gemini_batch_process.py \
-  --task generate --model gemini-3-pro-image-preview \
-  --prompt "Create a cyberpunk neon holographic infographic titled 'MARKETING 2026'. Style: Blade Runner aesthetic, dark cityscape, rain, neon data cards floating around holographic AI head. Hyper-detailed, cinematic." \
-  --aspect-ratio 1:1 --size 4K --output infographic-cyberpunk.png
-```
-
----
+**Example**: `Portrait of a cyberpunk hacker, neon lighting, cinematic composition, detailed face, 8k, artstation quality --ar 16:9 --style raw`
 
 ## References
 
-| Topic | File |
-|-------|------|
-| Image generation workflow | `references/image-generation-workflow.md` |
-| Nano Banana models | `references/nano-banana.md` |
-| Prompt examples (6000+) | `references/nano-banana-pro-examples.md` |
-| LLM patterns | `references/llm-prompting.md` |
-| Image syntax | `references/image-prompting.md` |
-| Domain patterns | `references/domain-patterns.md` |
+Load for detailed guidance:
 
----
+| Topic        | File                                | Description                                                |
+| ------------ | ----------------------------------- | ---------------------------------------------------------- |
+| LLM          | `references/llm-prompting.md`       | System prompts, few-shot, CoT, output formatting           |
+| Image        | `references/image-prompting.md`     | Style keywords, model syntax, negative prompts             |
+| Nano Banana  | `references/nano-banana.md`         | Gemini image prompting, narrative style, multi-image input |
+| Advanced     | `references/advanced-techniques.md` | Meta-prompting, chaining, A/B testing                      |
+| Domain Index | `references/domain-patterns.md`     | Universal pattern, links to domain files                   |
+| Marketing    | `references/domain-marketing.md`    | Headlines, product copy, emails, ads                       |
+| Code         | `references/domain-code.md`         | Functions, review, refactoring, debugging                  |
+| Writing      | `references/domain-writing.md`      | Stories, characters, dialogue, editing                     |
+| Data         | `references/domain-data.md`         | Extraction, analysis, comparison                           |
+
+## Model-Specific Tips
+
+| Model            | Key Syntax                                          |
+| ---------------- | --------------------------------------------------- |
+| Midjourney       | `--ar`, `--style`, `--chaos`, `--weird`, `--v 6.1`  |
+| DALL-E 3         | Natural language, no parameters, HD quality option  |
+| Stable Diffusion | Weighted tokens `(word:1.2)`, LoRA, negative prompt |
+| Flux             | Natural prompts, style mixing, `--guidance`         |
+| Imagen/Veo       | Descriptive text, aspect ratio, style references    |
 
 ## Anti-Patterns
 
-| Issue | Solution |
-|-------|----------|
-| Only offering one option | Always present Standard AND Creative |
-| Using Flash for complex art | Use Pro for unique art direction |
-| Vague creative prompts | Add detailed style, layout, elements |
-| Missing output path | Always specify `--output` |
+- Vague instructions ("make it better")
+- Conflicting constraints
+- Missing context for domain tasks
+- Over-prompting with redundant details
+- Ignoring model-specific strengths/limits
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements

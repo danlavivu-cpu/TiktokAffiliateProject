@@ -12,32 +12,32 @@
 **Direct implementation:**
 ```bash
 /cook implement user authentication with JWT
-/cook:auto add dark mode toggle to settings
+/cook-auto add dark mode toggle to settings
 ```
 
 ## Bug Fixing
 
 **Quick fixes:**
 ```bash
-/fix:fast login button not working
-/fix:types  # Fix TypeScript errors
+/fix-fast login button not working
+/fix-types  # Fix TypeScript errors
 ```
 
 **Complex debugging:**
 ```bash
 /debug API returns 500 errors intermittently
-/fix:hard authentication flow breaks after password reset
+/fix-hard authentication flow breaks after password reset
 ```
 
 **Test-driven fixes:**
 ```bash
-/fix:test user service tests failing
+/fix-test user service tests failing
 /test  # Run full test suite
 ```
 
 **CI/CD failures:**
 ```bash
-/fix:ci https://github.com/org/repo/actions/runs/12345
+/fix-ci https://github.com/org/repo/actions/runs/12345
 ```
 
 ## Code Review & Testing
@@ -49,7 +49,7 @@ claude "analyze the changes in PR #42"
 
 # Run tests
 /test
-/fix:test payment tests failing
+/fix-test payment tests failing
 ```
 
 ## Documentation Management
@@ -63,7 +63,7 @@ claude "analyze the changes in PR #42"
 ## Git Operations
 
 ```bash
-/git:cm                        # Stage and commit
+/git-cp                        # Stage and commit
 /git:cp                        # Stage, commit, and push
 /git:pr feature-branch main    # Create pull request from feature-branch to main
 ```
@@ -77,11 +77,11 @@ claude "analyze the changes in PR #42"
 /design:screenshot analyze this design and suggest improvements
 ```
 
-**Text content creation:**
+**Content creation:**
 ```bash
-/write:good write product description for new feature
-/write:fast create blog post about our API
-/write:cro optimize landing page copy for conversions
+/content:good write product description for new feature
+/content:fast create blog post about our API
+/content:cro optimize landing page copy for conversions
 ```
 
 ## Project Initialization
@@ -95,21 +95,20 @@ claude "analyze the changes in PR #42"
 
 **Codebase analysis:**
 ```bash
-/review:codebase analyze authentication implementation
-/scout:ext find all payment-related files
+/code-review analyze authentication implementation
+/scout-ext find all payment-related files
 ```
 
 **Strategic planning:**
 ```bash
-/plan:hard implement real-time collaboration features
-/plan:two compare serverless vs traditional backend approaches
+/plan-hard implement real-time collaboration features
+/plan-two compare serverless vs traditional backend approaches
 /brainstorm improve onboarding UX
 ```
 
 **Payment integrations:**
 ```bash
-/integrate:sepay add Vietnamese payment gateway
-/integrate:polar implement subscription billing
+/payment-integration add Vietnamese payment gateway
 ```
 
 **Skill management:**

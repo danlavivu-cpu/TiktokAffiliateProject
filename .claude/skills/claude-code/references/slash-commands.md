@@ -8,7 +8,7 @@ Slash commands are user-defined operations that:
 - Start with `/` (e.g., `/cook`, `/test`)
 - Expand to full prompts when executed
 - Accept arguments
-- Located in `.claude/commands/`
+- Located in `.claude/skills/` (previously `.claude/commands/`)
 - Can be project-specific or global
 
 ## Development Commands
@@ -221,38 +221,38 @@ Create conversion rate optimization plan.
 
 ## Content Commands
 
-### /write:fast [request]
+### /content:fast [request]
 Quick copy writing.
 
 ```bash
-/write:fast write product description for new feature
+/content:fast write product description for new feature
 ```
 
 **When to use**: Fast content generation
 
-### /write:good [request]
+### /content:good [request]
 High-quality, conversion-focused copy.
 
 ```bash
-/write:good write landing page hero section
+/content:good write landing page hero section
 ```
 
 **When to use**: Marketing copy requiring polish
 
-### /write:enhance [issue]
+### /content:enhance [issue]
 Enhance existing content.
 
 ```bash
-/write:enhance improve clarity of pricing page
+/content:enhance improve clarity of pricing page
 ```
 
 **When to use**: Improving existing copy
 
-### /write:cro [issue]
+### /content:cro [issue]
 Conversion rate optimization for content.
 
 ```bash
-/write:cro optimize email campaign copy
+/content:cro optimize email campaign copy
 ```
 
 **When to use**: Conversion-focused content improvements
@@ -326,23 +326,14 @@ Check deployment readiness.
 
 ## Integration Commands
 
-### /integrate:polar [tasks]
-Implement payment integration with Polar.sh.
+### /payment-integration [tasks]
+Implement payment integrations (SePay, Polar, etc.).
 
 ```bash
-/integrate:polar add subscription payments
+/payment-integration add Vietnamese payment gateway
 ```
 
-**When to use**: Polar payment integration
-
-### /integrate:sepay [tasks]
-Implement payment integration with SePay.vn.
-
-```bash
-/integrate:sepay add Vietnamese payment gateway
-```
-
-**When to use**: SePay payment integration
+**When to use**: Payment gateway integration
 
 ## Other Commands
 
@@ -429,15 +420,16 @@ Create new agent skill.
 
 ## Creating Custom Slash Commands
 
-### Command File Structure
+### Skill File Structure
 ```
-.claude/commands/
-└── my-command.md
+.claude/skills/
+└── my-skill/
+    └── SKILL.md
 ```
 
-### Example Command File
+### Example Skill File
 ```markdown
-# File: .claude/commands/my-command.md
+# File: .claude/skills/my-skill/SKILL.md
 
 Create comprehensive test suite for {{feature}}.
 

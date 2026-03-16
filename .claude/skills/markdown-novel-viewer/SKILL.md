@@ -1,3 +1,31 @@
+---
+name: markdown-novel-viewer
+version: 1.0.0
+description: '[Content] Background HTTP server rendering markdown files with calm, book-like reading experience.'
+
+allowed-tools: NONE
+---
+
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
+
+## Quick Summary
+
+**Goal:** Background HTTP server that renders markdown files with a calm, book-like reading UI and browses directories.
+
+**Workflow:**
+
+1. **Start Server** — Point at a markdown file or directory with CLI options
+2. **View Content** — Novel-themed reader (serif fonts, warm colors) or directory browser
+3. **Navigate Plans** — Auto-detects plan structures with sidebar, phase status, keyboard shortcuts
+
+**Key Rules:**
+
+- Requires `npm install` before first use (marked, highlight.js, gray-matter)
+- Use `/preview` slash command for quick access
+- Supports background mode, remote access via `--host 0.0.0.0`
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
+
 # markdown-novel-viewer
 
 Background HTTP server rendering markdown files with calm, book-like reading experience.
@@ -22,6 +50,7 @@ Without installation, you'll get **Error 500: Error rendering markdown**.
 ## Purpose
 
 Universal viewer - pass ANY path and view it:
+
 - **Markdown files** → novel-reader UI with serif fonts, warm theme
 - **Directories** → file listing browser with clickable links
 
@@ -61,18 +90,15 @@ Use `/preview` for quick access:
 ## Features
 
 ### Novel Theme
+
 - Warm cream background (light mode)
 - Dark mode with warm gold accents
 - Libre Baskerville serif headings
 - Inter body text, JetBrains Mono code
 - Maximum 720px content width
 
-### Mermaid.js Diagrams
-- Auto-renders `mermaid` code blocks as diagrams
-- Theme-aware (light/dark mode support)
-- Error display with source preview for debugging
-
 ### Directory Browser
+
 - Clean file listing with emoji icons
 - Markdown files link to viewer
 - Folders link to sub-directories
@@ -80,12 +106,14 @@ Use `/preview` for quick access:
 - Light/dark mode support
 
 ### Plan Navigation
+
 - Auto-detects plan directory structure
 - Sidebar shows all phases with status indicators
 - Previous/Next navigation buttons
 - Keyboard shortcuts: Arrow Left/Right
 
 ### Keyboard Shortcuts
+
 - `T` - Toggle theme
 - `S` - Toggle sidebar
 - `Left/Right` - Navigate phases
@@ -93,15 +121,15 @@ Use `/preview` for quick access:
 
 ## CLI Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--file <path>` | Markdown file to view | - |
-| `--dir <path>` | Directory to browse | - |
-| `--port <number>` | Server port | 3456 |
-| `--host <addr>` | Host to bind (`0.0.0.0` for remote) | localhost |
-| `--open` | Auto-open browser | false |
-| `--background` | Run in background | false |
-| `--stop` | Stop all servers | - |
+| Option            | Description                         | Default   |
+| ----------------- | ----------------------------------- | --------- |
+| `--file <path>`   | Markdown file to view               | -         |
+| `--dir <path>`    | Directory to browse                 | -         |
+| `--port <number>` | Server port                         | 3456      |
+| `--host <addr>`   | Host to bind (`0.0.0.0` for remote) | localhost |
+| `--open`          | Auto-open browser                   | false     |
+| `--background`    | Run in background                   | false     |
+| `--stop`          | Stop all servers                    | -         |
 
 ## Architecture
 
@@ -124,12 +152,12 @@ assets/
 
 ## HTTP Routes
 
-| Route | Description |
-|-------|-------------|
-| `/view?file=<path>` | Markdown file viewer |
-| `/browse?dir=<path>` | Directory browser |
-| `/assets/*` | Static assets |
-| `/file/*` | Local file serving (images) |
+| Route                | Description                 |
+| -------------------- | --------------------------- |
+| `/view?file=<path>`  | Markdown file viewer        |
+| `/browse?dir=<path>` | Directory browser           |
+| `/assets/*`          | Static assets               |
+| `/file/*`            | Local file serving (images) |
 
 ## Dependencies
 
@@ -141,18 +169,21 @@ assets/
 ### Theme Colors (CSS Variables)
 
 Light mode variables in `assets/novel-theme.css`:
+
 ```css
---bg-primary: #faf8f3;      /* Warm cream */
---accent: #8b4513;          /* Saddle brown */
+--bg-primary: #faf8f3; /* Warm cream */
+--accent: #8b4513; /* Saddle brown */
 ```
 
 Dark mode:
+
 ```css
---bg-primary: #1a1a1a;      /* Near black */
---accent: #d4a574;          /* Warm gold */
+--bg-primary: #1a1a1a; /* Near black */
+--accent: #d4a574; /* Warm gold */
 ```
 
 ### Content Width
+
 ```css
 --content-width: 720px;
 ```
@@ -170,10 +201,10 @@ When using `--host 0.0.0.0`, the server auto-detects your local network IP and i
 
 ```json
 {
-  "success": true,
-  "url": "http://localhost:3456/view?file=...",
-  "networkUrl": "http://192.168.2.75:3456/view?file=...",
-  "port": 3456
+    "success": true,
+    "url": "http://localhost:3456/view?file=...",
+    "networkUrl": "http://192.168.2.75:3456/view?file=...",
+    "port": 3456
 }
 ```
 
@@ -189,88 +220,9 @@ Use `networkUrl` to access from other devices on the same network.
 
 **Remote access denied**: Use `--host 0.0.0.0` to bind to all interfaces
 
-## Mermaid.js Diagrams
+---
 
-### Usage
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
 
-Use fenced code blocks with `mermaid` language:
-
-````markdown
-```mermaid
-pie title Traffic Sources
-    "Organic" : 45
-    "Direct" : 30
-    "Referral" : 25
-```
-````
-
-### Supported Diagram Types
-
-| Type | Syntax | Use Case |
-|------|--------|----------|
-| Flowchart | `flowchart LR/TB/TD` | Process flows, decision trees |
-| Sequence | `sequenceDiagram` | API interactions, message flows |
-| Pie | `pie title "..."` | Distribution data |
-| Gantt | `gantt` | Project timelines |
-| XY Chart | `xychart-beta` | Bar/line charts |
-| Mindmap | `mindmap` | Idea hierarchies |
-| Quadrant | `quadrantChart` | 2x2 matrices |
-
-### Validating Mermaid Snippets
-
-**Quick validation**: Use the [Mermaid Live Editor](https://mermaid.live) to test syntax.
-
-**Common errors and fixes**:
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `Parse error` | Invalid syntax | Check diagram type declaration |
-| `Unknown diagram type` | Typo in declaration | Use exact type: `flowchart`, not `flow` |
-| `Expecting token` | Missing quotes/brackets | Ensure balanced delimiters |
-| `UnknownDiagramError` | Empty or malformed block | Add valid diagram content |
-
-### Fixing Common Issues
-
-**1. Flowchart arrows**
-```mermaid
-%% Wrong: A -> B
-%% Correct:
-flowchart LR
-    A --> B
-```
-
-**2. Pie chart values**
-```mermaid
-%% Wrong: "Label": 50%
-%% Correct:
-pie title Sales
-    "Product A" : 50
-    "Product B" : 30
-```
-
-**3. XY Chart data format**
-```mermaid
-xychart-beta
-    title "Monthly Sales"
-    x-axis [Jan, Feb, Mar]
-    y-axis "Revenue" 0 --> 100
-    bar [30, 45, 60]
-```
-
-**4. Sequence diagram participants**
-```mermaid
-sequenceDiagram
-    participant A as Client
-    participant B as Server
-    A->>B: Request
-    B-->>A: Response
-```
-
-### Debug Mode
-
-When a diagram fails to render, the viewer shows:
-- Error message
-- Expandable source code preview
-- Line number where parsing failed (when available)
-
-Fix the syntax and refresh the page to re-render.
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements

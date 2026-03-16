@@ -1,22 +1,9 @@
 #!/bin/bash
 
-# ┌─────────────────────────────────────────────────────────────────────────┐
-# │ DEPRECATED: This script is no longer maintained                         │
-# │                                                                         │
-# │ Use notify.cjs instead - zero dependencies, works everywhere:           │
-# │   node .claude/hooks/notifications/notify.cjs                           │
-# │                                                                         │
-# │ In your settings.json:                                                  │
-# │   "Stop": [{"matcher": "*", "hooks": [{"type": "command",               │
-# │     "command": "node .claude/hooks/notifications/notify.cjs"}]}]        │
-# └─────────────────────────────────────────────────────────────────────────┘
+# Telegram Notification Hook for Claude Code (Project-Specific)
+# This hook sends a notification to Telegram when Claude finishes a task
 
-echo "⚠️  DEPRECATED: telegram_notify.sh is no longer maintained" >&2
-echo "   Use: node .claude/hooks/notifications/notify.cjs" >&2
-echo "   See: .claude/hooks/notifications/docs/" >&2
-exit 1
-
-# --- LEGACY CODE BELOW (kept for reference) ---
+set -euo pipefail
 
 # Load environment variables with priority: process.env > .claude/.env > .claude/hooks/.env
 load_env() {

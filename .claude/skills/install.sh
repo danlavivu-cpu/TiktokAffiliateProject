@@ -455,6 +455,34 @@ install_node_deps() {
         print_success "plans-kanban dependencies installed"
     fi
 
+    # markdown-to-pdf (md-to-pdf, gray-matter)
+    if [ -d "$SCRIPT_DIR/markdown-to-pdf" ] && [ -f "$SCRIPT_DIR/markdown-to-pdf/package.json" ]; then
+        print_info "Installing markdown-to-pdf dependencies..."
+        (cd "$SCRIPT_DIR/markdown-to-pdf" && npm install --quiet)
+        print_success "markdown-to-pdf dependencies installed"
+    fi
+
+    # markdown-to-docx (markdown-docx, gray-matter)
+    if [ -d "$SCRIPT_DIR/markdown-to-docx" ] && [ -f "$SCRIPT_DIR/markdown-to-docx/package.json" ]; then
+        print_info "Installing markdown-to-docx dependencies..."
+        (cd "$SCRIPT_DIR/markdown-to-docx" && npm install --quiet)
+        print_success "markdown-to-docx dependencies installed"
+    fi
+
+    # docx-to-markdown (mammoth, turndown, turndown-plugin-gfm)
+    if [ -d "$SCRIPT_DIR/docx-to-markdown" ] && [ -f "$SCRIPT_DIR/docx-to-markdown/package.json" ]; then
+        print_info "Installing docx-to-markdown dependencies..."
+        (cd "$SCRIPT_DIR/docx-to-markdown" && npm install --quiet)
+        print_success "docx-to-markdown dependencies installed"
+    fi
+
+    # pdf-to-markdown (@opendocsg/pdf2md)
+    if [ -d "$SCRIPT_DIR/pdf-to-markdown" ] && [ -f "$SCRIPT_DIR/pdf-to-markdown/package.json" ]; then
+        print_info "Installing pdf-to-markdown dependencies..."
+        (cd "$SCRIPT_DIR/pdf-to-markdown" && npm install --quiet)
+        print_success "pdf-to-markdown dependencies installed"
+    fi
+
     # Optional: Shopify CLI (ask user unless auto-confirming)
     if [ -d "$SCRIPT_DIR/shopify" ]; then
         if [[ "$SKIP_CONFIRM" == "true" ]]; then
@@ -581,8 +609,8 @@ setup_python_env() {
         if [ -d "$skill_dir" ]; then
             skill_name=$(basename "$skill_dir")
 
-            # Skip .venv and document-skills
-            if [ "$skill_name" == ".venv" ] || [ "$skill_name" == "document-skills" ]; then
+            # Skip .venv
+            if [ "$skill_name" == ".venv" ]; then
                 continue
             fi
 
@@ -639,6 +667,37 @@ setup_python_env() {
             fi
         fi
     done
+
+    # Install .claude/scripts requirements (contains pyyaml for generate_catalogs.py)
+    local SCRIPTS_REQ="$SCRIPT_DIR/../scripts/requirements.txt"
+    if [ -f "$SCRIPTS_REQ" ]; then
+        local SCRIPTS_LOG="$LOG_DIR/install-scripts.log"
+        print_info "Installing .claude/scripts dependencies..."
+
+        local pkg_success=0
+        local pkg_fail=0
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "${line// }" ]] && continue
+            line="${line%%#*}"
+            line="${line%"${line##*[![:space:]]}"}"
+            [[ -z "$line" ]] && continue
+
+            if try_pip_install "$line" "$SCRIPTS_LOG"; then
+                pkg_success=$((pkg_success + 1))
+            else
+                pkg_fail=$((pkg_fail + 1))
+                track_failure "optional" "scripts:$line" "Package install failed"
+            fi
+        done < "$SCRIPTS_REQ"
+
+        if [[ $pkg_fail -eq 0 ]]; then
+            print_success ".claude/scripts: all $pkg_success packages installed"
+            track_success "optional" "scripts"
+        else
+            print_warning ".claude/scripts: $pkg_success installed, $pkg_fail failed"
+        fi
+    fi
 
     # Print installation summary (brief - final report comes later)
     print_header "Python Dependencies Installation Summary"

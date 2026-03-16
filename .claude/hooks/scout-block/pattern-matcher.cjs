@@ -6,7 +6,7 @@
  * Supports negation patterns (!) for allowlisting.
  */
 
-const Ignore = require('./vendor/ignore.cjs');
+const Ignore = require('./vendor/ignore');
 const fs = require('fs');
 const path = require('path');
 

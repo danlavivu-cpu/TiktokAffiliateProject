@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-ClaudeKit Help Command - All-in-one guide with dynamic command discovery.
-Scans .claude/commands/ directory to build catalog at runtime.
+ClaudeKit Help Command - All-in-one guide with dynamic skill discovery.
+Scans .claude/skills/ directory to build catalog at runtime.
 
 Usage:
     python ck-help.py                    # Overview with quick start
     python ck-help.py fix                # Category guide with workflow
-    python ck-help.py plan:fast          # Command details
+    python ck-help.py plan-fast          # Skill details
     python ck-help.py debug login error  # Task recommendations
     python ck-help.py auth               # Search (unknown word)
 """
@@ -44,103 +44,13 @@ def emit_output_type(output_type: str) -> None:
     print()
 
 
-# Fuzzy matching for typo tolerance
-def levenshtein_distance(s1: str, s2: str) -> int:
-    """Standard Levenshtein distance algorithm."""
-    if len(s1) < len(s2):
-        return levenshtein_distance(s2, s1)
-    if len(s2) == 0:
-        return len(s1)
-
-    prev_row = range(len(s2) + 1)
-    for i, c1 in enumerate(s1):
-        curr_row = [i + 1]
-        for j, c2 in enumerate(s2):
-            insertions = prev_row[j + 1] + 1
-            deletions = curr_row[j] + 1
-            substitutions = prev_row[j] + (c1 != c2)
-            curr_row.append(min(insertions, deletions, substitutions))
-        prev_row = curr_row
-    return prev_row[-1]
-
-
-def fuzzy_match(word: str, target: str, threshold: int = 2) -> bool:
-    """Check if word matches target within edit distance threshold."""
-    if len(word) < 3:  # Skip very short words
-        return word == target
-
-    # Exact match short-circuit
-    if word == target:
-        return True
-
-    # Require similar lengths to avoid false positives (e.g., "create" ≠ "creative")
-    len_diff = abs(len(word) - len(target))
-    if len_diff > 1:
-        return False
-
-    # Allow threshold based on word length (max 1/3 of target length)
-    max_edits = min(threshold, len(target) // 3)
-    if max_edits < 1:
-        return word == target
-
-    return levenshtein_distance(word, target) <= max_edits
-
-
-# Disambiguation threshold - if top 2 scores within this, ask user
-DISAMBIGUATION_THRESHOLD = 0.5
-
-
-# Synonym mappings for normalization (term → canonical)
-SYNONYMS = {
-    # Notifications
-    "alerts": "notifications",
-    "alert": "notification",
-
-    # Git/GitHub
-    "ci": "github actions",
-    "ci/cd": "github actions",
-    "pipeline": "github actions",
-    "actions": "github actions",
-
-    # Common abbreviations
-    "auth": "authentication",
-    "authn": "authentication",
-    "db": "database",
-    "repo": "repository",
-    "deps": "dependencies",
-
-    # Commands
-    "pr": "pull request",
-    "mr": "pull request",  # GitLab users
-
-    # Testing
-    "specs": "tests",
-    "e2e": "integration test",
-}
-
-
-def expand_synonyms(text: str) -> str:
-    """Replace synonyms with canonical terms."""
-    result = text.lower()
-
-    # Sort by length (longest first) to handle multi-word synonyms
-    sorted_synonyms = sorted(SYNONYMS.items(), key=lambda x: -len(x[0]))
-
-    for synonym, canonical in sorted_synonyms:
-        # Word boundary aware replacement
-        pattern = r'\b' + re.escape(synonym) + r'\b'
-        result = re.sub(pattern, canonical, result, flags=re.IGNORECASE)
-
-    return result
-
-
 # Task keyword mappings for intent detection
 TASK_MAPPINGS = {
     "fix": ["fix", "bug", "error", "broken", "issue", "debug", "crash", "fail", "wrong", "not working"],
     "plan": ["plan", "design", "architect", "research", "think", "analyze", "strategy", "how to", "approach"],
     "cook": ["implement", "build", "create", "add", "feature", "code", "develop", "make", "write"],
-    "bootstrap": ["start", "new", "init", "setup", "project", "scaffold", "generate", "begin"],
-    "test": ["test", "check", "verify", "validate", "spec", "unit", "integration", "coverage", "login", "auth", "e2e"],
+
+    "test": ["test", "check", "verify", "validate", "spec", "unit", "integration", "coverage"],
     "docs": ["document", "readme", "docs", "explain", "comment", "documentation"],
     "git": ["commit", "push", "pr", "merge", "branch", "pull", "request", "git"],
     "design": ["ui", "ux", "style", "layout", "visual", "css", "component", "page", "responsive"],
@@ -151,14 +61,6 @@ TASK_MAPPINGS = {
     "scout": ["find", "search", "locate", "explore", "scan", "where"],
     "config": ["config", "configure", "settings", "ck.json", ".ck.json", "setup", "locale", "language", "paths"],
     "coding-level": ["coding", "level", "eli5", "junior", "senior", "lead", "god", "beginner", "expert", "teach", "learn", "explain"],
-    # New categories
-    "worktree": ["worktree", "parallel", "isolate", "isolation", "concurrent", "multiple branches"],
-    "kanban": ["kanban", "board", "dashboard", "progress", "track", "orchestration", "visualize"],
-    "preview": ["preview", "view", "render", "markdown", "reader", "novel"],
-    "journal": ["journal", "diary", "log", "entry", "reflect", "failure", "lesson"],
-    "brainstorm": ["brainstorm", "idea", "ideate", "creative", "explore ideas", "think through"],
-    "watzup": ["watzup", "status", "summary", "wrap up", "what's up", "recent", "changes"],
-    "notifications": ["notification", "notifications", "notify", "discord", "telegram", "slack", "alert", "webhook", "stop hook", "session end", "setup notification", "setup notifications", "configure discord", "configure telegram", "configure slack", "discord webhook", "telegram bot", "slack webhook"],
 }
 
 # Category workflows and tips
@@ -175,93 +77,84 @@ CATEGORY_GUIDES = {
     "plan": {
         "title": "Planning",
         "workflow": [
-            ("Quick plan", "`/plan:fast` \"your task\""),
-            ("Deep research", "`/plan:hard` \"complex task\""),
-            ("Validate", "`/plan:validate` (interview to confirm decisions)"),
+            ("Quick plan", "`/plan-fast` \"your task\""),
+            ("Deep research", "`/plan-hard` \"complex task\""),
+            ("Validate", "`/plan-validate` (interview to confirm decisions)"),
             ("Execute plan", "`/code` (runs the plan)"),
         ],
-        "tip": "Use /plan:validate to confirm assumptions before coding",
+        "tip": "Use /plan-validate to confirm assumptions before coding",
     },
     "cook": {
         "title": "Implementation",
         "workflow": [
             ("Quick impl", "`/cook` \"your feature\""),
-            ("Auto mode", "`/cook:auto` \"trust me bro\""),
+            ("Auto mode", "`/cook-auto` \"trust me bro\""),
             ("Test", "`/test`"),
         ],
         "tip": "Cook is standalone - it plans internally. Use /plan → /code for explicit planning",
-    },
-    "bootstrap": {
-        "title": "Project Setup",
-        "workflow": [
-            ("Quick start", "`/bootstrap:auto:fast` \"requirements\""),
-            ("Full setup", "`/bootstrap` \"detailed requirements\""),
-        ],
-        "tip": "Include tech stack preferences in description",
     },
     "test": {
         "title": "Testing",
         "workflow": [
             ("Run tests", "`/test`"),
-            ("Fix failures", "`/fix:test`"),
+            ("Fix failures", "`/fix-test`"),
         ],
         "tip": "Run tests frequently during development",
     },
     "docs": {
         "title": "Documentation",
         "workflow": [
-            ("Initialize", "`/docs:init`"),
-            ("Update", "`/docs:update`"),
+            ("Initialize", "`/docs-init`"),
+            ("Update", "`/docs-update`"),
         ],
         "tip": "Keep docs close to code for accuracy",
     },
     "git": {
         "title": "Git Workflow",
         "workflow": [
-            ("Commit", "`/git:cm`"),
-            ("Push", "`/git:cp`"),
-            ("PR", "`/git:pr`"),
+            ("Commit", "`/commit`"),
+            ("Push", "`/git-cp`"),
+            ("PR", "`/pr`"),
         ],
         "tip": "Commit often with clear messages",
     },
     "design": {
         "title": "Design",
         "workflow": [
-            ("Quick design", "`/design:fast` \"description\""),
-            ("From screenshot", "`/design:screenshot` <path>"),
-            ("3D design", "`/design:3d` \"description\""),
+            ("Quick design", "`/design-fast` \"description\""),
+            ("From screenshot", "`/design-screenshot` <path>"),
+            ("3D design", "`/design-3d` \"description\""),
         ],
         "tip": "Reference existing designs for consistency",
     },
     "review": {
         "title": "Code Review",
         "workflow": [
-            ("Full review", "`/review:codebase`"),
+            ("Full review", "`/code-review`"),
         ],
         "tip": "Review before merging to main",
     },
     "content": {
         "title": "Content Creation",
         "workflow": [
-            ("Quick copy", "`/content:fast` \"requirements\""),
-            ("Quality copy", "`/content:good` \"requirements\""),
-            ("Optimize", "`/content:cro`"),
+            ("Quick copy", "`/content-fast` \"requirements\""),
+            ("Quality copy", "`/content-good` \"requirements\""),
+            ("Optimize", "`/content-cro`"),
         ],
         "tip": "Know your audience before writing",
     },
     "integrate": {
         "title": "Integration",
         "workflow": [
-            ("Polar.sh", "`/integrate:polar`"),
-            ("SePay", "`/integrate:sepay`"),
+            ("Payment Systems", "`/payment-integration`"),
         ],
         "tip": "Read API docs before integrating",
     },
     "skill": {
         "title": "Skill Management",
         "workflow": [
-            ("Create", "`/skill:create`"),
-            ("Optimize", "`/skill:optimize`"),
+            ("Create", "`/skill-create`"),
+            ("Optimize", "`/skill-optimize`"),
         ],
         "tip": "Skills extend agent capabilities",
     },
@@ -269,7 +162,7 @@ CATEGORY_GUIDES = {
         "title": "Codebase Exploration",
         "workflow": [
             ("Find files", "`/scout` \"what to find\""),
-            ("External tools", "`/scout:ext` \"query\""),
+            ("External tools", "`/scout-ext` \"query\""),
         ],
         "tip": "Be specific about what you're looking for",
     },
@@ -295,84 +188,13 @@ CATEGORY_GUIDES = {
         ],
         "tip": "Global config works in fresh dirs; local overrides for projects",
     },
-    # New category guides (workflow-first approach)
-    "worktree": {
-        "title": "Git Worktrees (Parallel Development)",
-        "workflow": [
-            ("Create worktree", "`/worktree` \"feature description\""),
-            ("Work in isolation", "cd to worktree, implement, test"),
-            ("Review & merge", "`/git:pr` from worktree → merge → cleanup"),
-            ("List worktrees", "`/worktree list`"),
-            ("Remove worktree", "`/worktree remove <name>`"),
-        ],
-        "tip": "Use worktrees for parallel features without stashing. Each worktree = isolated branch + clean working directory",
-    },
-    "kanban": {
-        "title": "AI Orchestration Board",
-        "workflow": [
-            ("View dashboard", "`/kanban` (opens browser)"),
-            ("Specific plans", "`/kanban plans/my-feature/`"),
-            ("Track progress", "View phase completion, timeline, activity"),
-            ("Stop server", "`/kanban --stop`"),
-        ],
-        "tip": "Dashboard shows plan phases, progress bars, and agent activity. Future: worktree + agent orchestration",
-    },
-    "preview": {
-        "title": "Content Preview (Novel Reader UI)",
-        "workflow": [
-            ("View markdown", "`/preview plans/plan.md`"),
-            ("Browse directory", "`/preview docs/`"),
-            ("Stop server", "`/preview --stop`"),
-        ],
-        "tip": "Beautiful novel-reader UI for markdown. Great for reviewing plans before execution",
-    },
-    "journal": {
-        "title": "Technical Journaling",
-        "workflow": [
-            ("Write entry", "`/journal`"),
-            ("Document failures", "Capture what went wrong with emotional honesty"),
-            ("Lessons learned", "Turn setbacks into future guidance"),
-        ],
-        "tip": "Use after repeated test failures, critical bugs, or architectural pivots. Raw honesty = future wisdom",
-    },
-    "brainstorm": {
-        "title": "Brainstorming & Ideation",
-        "workflow": [
-            ("Quick brainstorm", "`/brainstorm \"your question\"`"),
-            ("Explore approaches", "Get 2-3 viable solutions with trade-offs"),
-            ("Challenge assumptions", "Receive brutally honest feedback"),
-        ],
-        "tip": "Respects codingLevel. Set `codingLevel: 0` for ELI5 explanations or `5` for expert-only mode",
-    },
-    "watzup": {
-        "title": "Session Review & Wrap-up",
-        "workflow": [
-            ("Review changes", "`/watzup`"),
-            ("Get summary", "See what was done, what files changed"),
-            ("Next steps", "Receive suggestions for what to do next"),
-        ],
-        "tip": "Run before ending session to capture progress and plan next steps",
-    },
-    "notifications": {
-        "title": "Session Notifications (Discord/Telegram/Slack)",
-        "workflow": [
-            ("1. Set env vars", "Add `DISCORD_WEBHOOK_URL` or `TELEGRAM_BOT_TOKEN`+`TELEGRAM_CHAT_ID` to `~/.claude/.env`"),
-            ("2. Add hook", "Add Stop hook to `.claude/settings.json` (see below)"),
-            ("3. Test", "`echo '{\"hook_event_name\":\"Stop\"}' | node .claude/hooks/notifications/notify.cjs`"),
-        ],
-        "tip": """Add to settings.json:
-```json
-"Stop": [{"matcher": "*", "hooks": [{"type": "command", "command": "node .claude/hooks/notifications/notify.cjs"}]}]
-```
-Docs: `.claude/hooks/notifications/docs/`""",
-    },
 }
 
 
-def detect_prefix(commands_dir: Path) -> str:
-    """Detect if commands use /ck: prefix based on directory structure."""
-    ck_commands_dir = commands_dir / "ck"
-    return "ck:" if ck_commands_dir.exists() and ck_commands_dir.is_dir() else ""
+def detect_prefix(skills_dir: Path) -> str:
+    """Detect if skills use /ck- prefix based on directory structure."""
+    # Check if any skill starts with "ck-"
+    return ""  # No prefix needed for skills
 
 
 def parse_frontmatter(file_path: Path) -> dict:
@@ -402,44 +224,36 @@ def parse_frontmatter(file_path: Path) -> dict:
     return result
 
 
-def discover_commands(commands_dir: Path, prefix: str) -> dict:
-    """Scan .claude/commands/ and build command catalog."""
+def discover_skills(skills_dir: Path, prefix: str) -> dict:
+    """Scan .claude/skills/ and build skill catalog."""
     commands = {}
     categories = {}
 
-    if not commands_dir.exists():
+    if not skills_dir.exists():
         return {"commands": commands, "categories": categories}
 
-    # Scan all .md files
-    for md_file in commands_dir.rglob("*.md"):
-        # Skip non-command files
-        rel_path = md_file.relative_to(commands_dir)
-        parts = rel_path.parts
+    # Scan all SKILL.md files
+    for skill_file in skills_dir.rglob("SKILL.md"):
+        skill_dir = skill_file.parent
+        skill_name = skill_dir.name
 
-        # Get command name from path
-        # e.g., fix/fast.md -> fix:fast, plan.md -> plan
-        if len(parts) == 1:
-            # Root command: plan.md -> plan
-            cmd_name = parts[0].replace('.md', '')
-            category = "core"
-        else:
-            # Nested command: fix/fast.md -> fix:fast
-            category = parts[0]
-            cmd_name = ':'.join([p.replace('.md', '') for p in parts])
+        # Derive category from skill name prefix (e.g., fix-fast -> fix)
+        parts = skill_name.split('-')
+        category = parts[0] if len(parts) > 1 else "core"
 
         # Parse frontmatter
-        fm = parse_frontmatter(md_file)
+        fm = parse_frontmatter(skill_file)
         description = fm.get('description', '')
 
-        # Skip if no description (not a real command)
+        # Skip if no description
         if not description:
             continue
 
         # Clean description (remove emoji indicators)
         clean_desc = re.sub(r'^[^\w\s]+\s*', '', description).strip()
 
-        # Format command name with prefix
-        formatted_name = f"/{prefix}{cmd_name}" if prefix else f"/{cmd_name}"
+        # Format skill name as command trigger
+        formatted_name = f"/{prefix}{skill_name}" if prefix else f"/{skill_name}"
 
         # Add to commands
         if category not in commands:
@@ -468,39 +282,18 @@ def detect_intent(input_str: str, categories: list) -> str:
         return "overview"
 
     input_lower = input_str.lower()
-    words = input_str.split()
 
-    # Multiple words = likely task description (even if first word is a category)
-    # e.g., "test my login" should be task, not category "test"
-    if len(words) >= 2:
-        # Exception: if it looks like a command (has colon), treat as command
-        if ':' in input_str:
-            return "command"
-        return "task"
-
-    # Single word: check if it's a known category from discovered commands
+    # Check if it's a known category
     if input_lower in [c.lower() for c in categories]:
         return "category"
 
-    # Check if it's a known category from CATEGORY_GUIDES (includes non-command categories)
-    if input_lower in [c.lower() for c in CATEGORY_GUIDES.keys()]:
-        return "category"
-
-    # Single word typo tolerance: fuzzy match against categories
-    all_categories = set(c.lower() for c in categories) | set(c.lower() for c in CATEGORY_GUIDES.keys())
-    for cat in all_categories:
-        if fuzzy_match(input_lower, cat):
-            return "category"
-
-    # Single word typo tolerance: fuzzy match against task keywords
-    for cat, keywords in TASK_MAPPINGS.items():
-        for kw in keywords:
-            if ' ' not in kw and fuzzy_match(input_lower, kw):
-                return "task"
-
-    # Check if it looks like a command (has colon)
-    if ':' in input_str:
+    # Check if it looks like a specific skill (has hyphen suggesting compound name)
+    if '-' in input_str and len(input_str.split()) == 1:
         return "command"
+
+    # Multiple words = task description
+    if len(input_str.split()) >= 2:
+        return "task"
 
     return "search"
 
@@ -524,11 +317,6 @@ def show_overview(data: dict, prefix: str) -> None:
     print(f"- `/{prefix}fix` - Fix bugs intelligently")
     print(f"- `/{prefix}test` - Run and analyze tests")
     print()
-    print("**Common Workflows:**")
-    print(f"- New feature: `/{prefix}plan` → `/{prefix}code` → `/{prefix}test` → `/{prefix}git:pr`")
-    print(f"- Bug fix: `/{prefix}debug` → `/{prefix}fix` → `/{prefix}test` → `/{prefix}git:cm`")
-    print(f"- Review: `/{prefix}scout` → `/{prefix}review` → `/{prefix}watzup`")
-    print()
     print("**Categories:**")
     for cat_key in sorted(categories.keys()):
         count = len(commands.get(cat_key, []))
@@ -538,12 +326,6 @@ def show_overview(data: dict, prefix: str) -> None:
     print(f"- `{help_cmd} <category>` - Category guide with workflow")
     print(f"- `{help_cmd} <command>` - Command details")
     print(f"- `{help_cmd} <task description>` - Recommendations")
-    print()
-    print("**Tips:**")
-    print(f"- Unclear about approach? → `/{prefix}brainstorm` first")
-    print(f"- Agent generated report? → `/{prefix}preview` to view")
-    print("- Add `ultrathink` for deep analysis (more tokens)")
-    print("- `:parallel` variants (e.g., `/code:parallel`) = faster but more tokens, check quota")
 
 
 def show_category_guide(data: dict, category: str, prefix: str) -> None:
@@ -553,35 +335,17 @@ def show_category_guide(data: dict, category: str, prefix: str) -> None:
     categories = data["categories"]
     commands = data["commands"]
 
-    # Find matching category (case-insensitive) - check both discovered and CATEGORY_GUIDES
+    # Find matching category (case-insensitive)
     cat_key = None
-    category_lower = category.lower()
-
     for key in categories:
-        if key.lower() == category_lower:
+        if key.lower() == category.lower():
             cat_key = key
             break
 
-    # Also check CATEGORY_GUIDES for categories without discovered commands (worktree, kanban, etc.)
     if not cat_key:
-        for key in CATEGORY_GUIDES.keys():
-            if key.lower() == category_lower:
-                cat_key = key
-                break
-
-    # Fuzzy match for typos (e.g., "notifcations" → "notifications")
-    if not cat_key:
-        all_categories = list(categories.keys()) + list(CATEGORY_GUIDES.keys())
-        for key in all_categories:
-            if fuzzy_match(category_lower, key.lower()):
-                cat_key = key
-                break
-
-    if not cat_key:
-        all_cats = set(categories.keys()) | set(CATEGORY_GUIDES.keys())
         print(f"Category '{category}' not found.")
         print()
-        print("Available: " + ", ".join(f"`{c}`" for c in sorted(all_cats)))
+        print("Available: " + ", ".join(f"`{c}`" for c in sorted(categories.keys())))
         return
 
     cmds = commands.get(cat_key, [])
@@ -597,11 +361,10 @@ def show_category_guide(data: dict, category: str, prefix: str) -> None:
             print(f"- {step}: {cmd}")
         print()
 
-    # Commands list (only if we have discovered commands for this category)
-    if cmds:
-        print("**Commands:**")
-        for cmd in cmds:
-            print(f"- `{cmd['name']}` - {cmd['description']}")
+    # Commands list
+    print("**Commands:**")
+    for cmd in cmds:
+        print(f"- `{cmd['name']}` - {cmd['description']}")
 
     # Tip at the end
     if "tip" in guide:
@@ -616,13 +379,13 @@ def show_command(data: dict, command: str, prefix: str) -> None:
     commands = data["commands"]
 
     # Normalize search term
-    search = command.lower().replace("/ck:", "").replace("/", "").replace(":", "")
+    search = command.lower().replace("/ck-", "").replace("/", "").replace(":", "-")
 
     found = None
     for cmds in commands.values():
         for cmd in cmds:
             # Normalize command name for comparison
-            name = cmd["name"].lower().replace("/ck:", "").replace("/", "").replace(":", "")
+            name = cmd["name"].lower().replace("/ck-", "").replace("/", "")
             if name == search:
                 found = cmd
                 break
@@ -679,102 +442,17 @@ def do_search(data: dict, term: str, prefix: str) -> None:
         print(f"- `{cmd['name']}` - {cmd['description']}")
 
 
-def format_disambiguation(task: str, candidates: list) -> None:
-    """Output disambiguation prompt for close-scoring categories."""
-    emit_output_type("task-recommendations")
-
-    print(f"# Clarify: {task}")
-    print()
-    print("Your query matches multiple categories. Which did you mean?")
-    print()
-
-    for i, (cat, score) in enumerate(candidates[:3], 1):
-        guide = CATEGORY_GUIDES.get(cat, {})
-        title = guide.get("title", cat.title())
-        # Show first workflow step as example
-        example = ""
-        if "workflow" in guide and guide["workflow"]:
-            example = f" (e.g., {guide['workflow'][0][1]})"
-        print(f"{i}. **{title}**{example}")
-
-    print()
-    print("*Reply with the number or rephrase your question.*")
-
-
 def recommend_task(data: dict, task: str, prefix: str) -> None:
     """Recommend commands for a task description."""
     emit_output_type("task-recommendations")
 
     commands = data["commands"]
+    task_lower = task.lower()
 
-    # Expand synonyms first, then lowercase
-    task_expanded = expand_synonyms(task)
-    task_lower = task_expanded
-    words = task_lower.split()
-
-    # Action verbs that indicate primary intent when at sentence start
-    # These get BONUS weight when they appear first (imperative sentences)
-    # NOTE: Excluded contextual words like "setup", "add" that often precede subjects
-    ACTION_VERBS = {
-        "fix", "debug", "test", "commit", "push", "merge", "pull", "create",
-        "build", "implement", "write", "make", "deploy", "run",
-        "configure", "install", "update", "upgrade", "delete", "remove",
-        "review", "check", "verify", "validate", "find", "search", "locate",
-        "plan", "design", "refactor", "optimize", "document", "explain",
-    }
-
-    # Check if first word is an action verb
-    first_word_is_action = words[0] in ACTION_VERBS if words else False
-
-    # Score categories by keyword matches with smart weighting
+    # Score categories by keyword matches
     scores = {}
     for cat, keywords in TASK_MAPPINGS.items():
-        score = 0.0
-        for kw in keywords:
-            # Multi-word keywords: exact substring match, high weight
-            if ' ' in kw:
-                if kw in task_lower:
-                    score += 3.0
-            # Single-word keywords: exact match first, then fuzzy fallback
-            else:
-                matched_pos = -1
-                is_fuzzy = False
-
-                # Try exact match first
-                match = re.search(r'\b' + re.escape(kw) + r'\b', task_lower)
-                if match:
-                    # Find word position from character position
-                    char_count = 0
-                    for i, word in enumerate(words):
-                        if char_count <= match.start() < char_count + len(word):
-                            matched_pos = i
-                            break
-                        char_count += len(word) + 1
-                else:
-                    # Fuzzy matching fallback for typos
-                    for i, word in enumerate(words):
-                        if fuzzy_match(word, kw):
-                            matched_pos = i
-                            is_fuzzy = True
-                            break
-
-                if matched_pos >= 0:
-                    # Smart weighting based on sentence structure
-                    if len(words) > 1:
-                        if first_word_is_action and matched_pos == 0:
-                            weight = 2.5
-                        elif first_word_is_action:
-                            weight = 1.0
-                        else:
-                            weight = 1.0 + (matched_pos / (len(words) - 1))
-                    else:
-                        weight = 2.0
-
-                    # Slight penalty for fuzzy matches (0.8x)
-                    if is_fuzzy:
-                        weight *= 0.8
-
-                    score += weight
+        score = sum(1 for kw in keywords if kw in task_lower)
         if score > 0:
             scores[cat] = score
 
@@ -785,17 +463,6 @@ def recommend_task(data: dict, task: str, prefix: str) -> None:
         return
 
     sorted_cats = sorted(scores.items(), key=lambda x: -x[1])
-
-    # Check for ambiguity - if top 2 scores are close, ask user to clarify
-    if len(sorted_cats) >= 2:
-        top_score = sorted_cats[0][1]
-        second_score = sorted_cats[1][1]
-
-        # If scores too close, disambiguate
-        if top_score - second_score < DISAMBIGUATION_THRESHOLD and top_score > 0:
-            format_disambiguation(task, sorted_cats[:3])
-            return
-
     top_cat = sorted_cats[0][0]
     guide = CATEGORY_GUIDES.get(top_cat, {})
 
@@ -809,12 +476,18 @@ def recommend_task(data: dict, task: str, prefix: str) -> None:
             print(f"- {step}: {cmd}")
         print()
 
-    # Show relevant commands - only from top matched category
-    # Avoid showing unrelated commands from secondary matches
-    if top_cat in commands and commands[top_cat]:
-        print("**Commands:**")
-        for cmd in commands[top_cat][:4]:
-            print(f"- `{cmd['name']}` - {cmd['description']}")
+    # Show relevant commands
+    print("**Commands:**")
+    shown = 0
+    for cat, _ in sorted_cats[:2]:
+        if cat in commands:
+            for cmd in commands[cat][:2]:
+                print(f"- `{cmd['name']}` - {cmd['description']}")
+                shown += 1
+                if shown >= 4:
+                    break
+        if shown >= 4:
+            break
 
     if "tip" in guide:
         print()
@@ -927,7 +600,7 @@ def show_config_guide() -> None:
     print("**Plan Validation:**")
     print("- `mode: \"prompt\"` - Ask user after plan creation (default)")
     print("- `mode: \"auto\"` - Always run validation interview")
-    print("- `mode: \"off\"` - Skip; user runs `/plan:validate` manually")
+    print("- `mode: \"off\"` - Skip; user runs `/plan-validate` manually")
     print()
     print("Validation interviews the user with critical questions to confirm")
     print("assumptions, risks, and architectural decisions before implementation.")
@@ -1059,11 +732,11 @@ def show_coding_level_guide() -> None:
     print("## Level Details")
     print()
     print("### Level 0 (ELI5)")
-    print("- **MUST** use real-world analogies (labeled boxes, recipes)")
-    print("- **MUST** define every technical term")
-    print("- **MUST** use \"we\" language")
-    print("- **MUST** end with check-in: \"Does this make sense?\"")
-    print("- **MUST** comment every line of code")
+    print("- **MANDATORY IMPORTANT MUST** use real-world analogies (labeled boxes, recipes)")
+    print("- **MANDATORY IMPORTANT MUST** define every technical term")
+    print("- **MANDATORY IMPORTANT MUST** use \"we\" language")
+    print("- **MANDATORY IMPORTANT MUST** end with check-in: \"Does this make sense?\"")
+    print("- **MANDATORY IMPORTANT MUST** comment every line of code")
     print("- Structure: Big Picture → Analogy → Baby Steps → Try It → Check-In")
     print()
     print("### Level 1 (Junior)")
@@ -1114,21 +787,21 @@ def show_coding_level_guide() -> None:
 
 
 def main():
-    # Find .claude/commands directory
+    # Find .claude/skills directory
     script_path = Path(__file__).resolve()
     claude_dir = script_path.parent.parent  # .claude/scripts -> .claude
-    commands_dir = claude_dir / "commands"
+    skills_dir = claude_dir / "skills"
 
-    if not commands_dir.exists():
-        print("Error: .claude/commands/ directory not found.")
+    if not skills_dir.exists():
+        print("Error: .claude/skills/ directory not found.")
         sys.exit(1)
 
-    # Detect prefix and discover commands
-    prefix = detect_prefix(commands_dir)
-    data = discover_commands(commands_dir, prefix)
+    # Discover skills
+    prefix = ""
+    data = discover_skills(skills_dir, prefix)
 
     if not data["commands"]:
-        print("No commands found in .claude/commands/")
+        print("No skills found in .claude/skills/")
         sys.exit(1)
 
     # Parse input

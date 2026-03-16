@@ -1,0 +1,191 @@
+---
+name: code
+version: 1.0.0
+description: '[Implementation] Start coding & testing an existing plan'
+---
+
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
+
+**Prerequisites:** **MUST READ** before executing:
+
+- `.claude/skills/shared/understand-code-first-protocol.md`
+- `docs/project-reference/backend-patterns-reference.md`
+- `docs/project-reference/frontend-patterns-reference.md`
+- `docs/project-reference/scss-styling-guide.md` — Styling/BEM guide (read when task involves frontend/UI)
+- `docs/project-reference/design-system/README.md` — Design system tokens (read when task involves frontend/UI)
+- `docs/project-reference/domain-entities-reference.md` — Domain entity catalog, relationships, cross-service sync (read when task involves business entities/models)
+
+> **External Memory:** For complex or lengthy work (research, analysis, scan, review), write intermediate findings and final results to a report file in `plans/reports/` — prevents context loss and serves as deliverable.
+
+> **Evidence Gate:** MANDATORY IMPORTANT MUST — every claim, finding, and recommendation requires `file:line` proof or traced evidence with confidence percentage (>80% to act, <80% must verify first).
+
+## Quick Summary
+
+**Goal:** Execute an existing implementation plan phase-by-phase with testing, code review, and user approval gates.
+
+**Workflow:**
+
+1. **Plan Detection** — Find latest plan or use provided path, select next incomplete phase
+2. **Analysis & Tasks** — Extract tasks from phase file into TaskCreate
+3. **Implementation** — Implement step-by-step, run type checks
+4. **Testing** — Call tester subagent; must reach 100% pass before proceeding
+5. **Code Review** — Call code-reviewer subagent; must reach 0 critical issues
+6. **User Approval** — BLOCKING gate: wait for explicit user approval
+7. **Finalize** — Update status, docs, and auto-commit
+
+**Key Rules:**
+
+- Tests must be 100% passing (Step 3 gate)
+- Critical issues must be 0 (Step 4 gate)
+- User must explicitly approve before finalize (Step 5 gate)
+- One plan phase per command run
+
+**MUST READ** `CLAUDE.md` then **THINK HARDER** to start working on the following plan:
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
+
+<plan>$ARGUMENTS</plan>
+
+---
+
+## Step 0: Plan Detection & Phase Selection
+
+**If `$ARGUMENTS` is empty:**
+
+1. Find latest `plan.md` in `./plans`
+2. Parse plan for phases and status, auto-select next incomplete (prefer IN_PROGRESS or earliest Planned)
+
+**If `$ARGUMENTS` provided:** Use that plan and detect which phase to work on.
+
+**Output:** `✓ Step 0: [Plan Name] - [Phase Name]`
+
+---
+
+## Workflow Sequence
+
+**Rules:** Follow steps 1-6 in order. Each step requires output marker `✓ Step N:`. Mark each complete in TaskCreate before proceeding. Do not skip steps.
+
+---
+
+## Step 1: Analysis & Task Extraction
+
+Read plan file completely. Map dependencies. List ambiguities. Identify required skills and activate from catalog. If the plan references analysis files in `.ai/workspace/analysis/`, re-read them before implementation.
+
+**TaskCreate Initialization:**
+
+- Initialize TaskCreate with `Step 0: [Plan Name] - [Phase Name]` and all steps (1-6)
+- Read phase file, look for tasks/steps/phases/sections/numbered/bulleted lists
+- Convert to TaskCreate tasks with UNIQUE names:
+    - Phase Implementation tasks → Step 2.X (Step 2.1, Step 2.2, etc.)
+    - Phase Testing tasks → Step 3.X
+    - Phase Code Review tasks → Step 4.X
+
+**Output:** `✓ Step 1: Found [N] tasks across [M] phases - Ambiguities: [list or "none"]`
+
+---
+
+## Step 2: Implementation
+
+Implement selected plan phase step-by-step following extracted tasks. Mark tasks complete as done. For UI work, call `ui-ux-designer` subagent. Run type checking and compile to verify.
+
+**Output:** `✓ Step 2: Implemented [N] files - [X/Y] tasks complete, compilation passed`
+
+---
+
+## Step 3: Testing
+
+Call `tester` subagent. If ANY tests fail: STOP, call `debugger` subagent, fix, re-run. Repeat until 100% pass.
+
+**Testing standards:** Unit tests may use mocks. Integration tests use test environment. Forbidden: commenting out tests, changing assertions to pass, TODO/FIXME to defer fixes.
+
+**Output:** `✓ Step 3: Tests [X/X passed] - All requirements met`
+
+**Validation:** If X ≠ total, Step 3 INCOMPLETE - do not proceed.
+
+---
+
+## Step 4: Code Review
+
+Call `code-reviewer` subagent. If critical issues found: STOP, fix, re-run `tester`, re-run `code-reviewer`. Repeat until no critical issues.
+
+**Output:** `✓ Step 4: Code reviewed - [0] critical issues`
+
+**Validation:** If critical issues > 0, Step 4 INCOMPLETE - do not proceed.
+
+---
+
+## Step 5: User Approval ⏸ BLOCKING GATE
+
+Present summary (3-5 bullets): what implemented, tests passed, code review outcome.
+
+**Ask user explicitly:** "Phase implementation complete. All tests pass, code reviewed. Approve changes?"
+
+**Stop and wait** - do not proceed until user responds.
+
+**Output:** `✓ Step 5: User approved - Ready to complete`
+
+---
+
+## Step 6: Finalize
+
+**Prerequisites:** User approved in Step 5.
+
+1. **STATUS UPDATE (PARALLEL):**
+    - Call `project-manager` subagent to update plan status
+    - Call `docs-manager` subagent to update documentation
+
+2. **ONBOARDING CHECK:** Detect onboarding requirements + generate summary.
+
+3. **AUTO-COMMIT:** Call `git-manager` subagent. Run only if Steps 1-2 successful + User approved + Tests passed.
+
+**Output:** `✓ Step 6: Finalize - Status updated - Git committed`
+
+---
+
+## Critical Enforcement Rules
+
+**Step output format:** `✓ Step [N]: [Brief status] - [Key metrics]`
+
+**TaskCreate tracking required:** Initialize at Step 0, mark each step complete before next.
+
+**Mandatory subagent calls:** Step 3: `tester` | Step 4: `code-reviewer` | Step 6: `project-manager` AND `docs-manager` AND `git-manager`
+
+**Blocking gates:**
+
+- Step 3: Tests must be 100% passing
+- Step 4: Critical issues must be 0
+- Step 5: User must explicitly approve
+
+Do not skip steps. Do not proceed if validation fails. Do not assume approval without user response. One plan phase per command run.
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements
+
+---
+
+## Workflow Recommendation
+
+> **IMPORTANT MUST:** If you are NOT already in a workflow, use `AskUserQuestion` to ask the user:
+>
+> 1. **Activate `refactor` workflow** (Recommended) — scout → investigate → plan → code → review → sre-review → test → docs
+> 2. **Execute `/code` directly** — run this skill standalone
+
+---
+
+## Next Steps
+
+**MANDATORY IMPORTANT MUST** after completing this skill, use `AskUserQuestion` to recommend:
+
+- **"/code-simplifier (Recommended)"** — Simplify implementation
+- **"/review-changes"** — Review changes before commit
+- **"Skip, continue manually"** — user decides
+
+## Closing Reminders
+
+**MANDATORY IMPORTANT MUST** break work into small todo tasks using `TaskCreate` BEFORE starting.
+**MANDATORY IMPORTANT MUST** validate decisions with user via `AskUserQuestion` — never auto-decide.
+**MANDATORY IMPORTANT MUST** add a final review todo task to verify work quality.

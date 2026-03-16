@@ -1,93 +1,188 @@
 ---
 name: ai-multimodal
-description: Process and generate multimedia content using Google Gemini API for better vision capabilities. Capabilities include analyze audio files (transcription with timestamps, summarization, speech understanding, music/sound analysis up to 9.5 hours), understand images (better image analysis than Claude models, captioning, reasoning, object detection, design extraction, OCR, visual Q&A, segmentation, handle multiple images), process videos (scene detection, Q&A, temporal analysis, YouTube URLs, up to 6 hours), extract from documents (PDF tables, forms, charts, diagrams, multi-page), generate images (text-to-image with Imagen 4, editing, composition, refinement), generate videos (text-to-video with Veo 3, 8-second clips with native audio). Use when working with audio/video files, analyzing images or screenshots (instead of default vision capabilities of Claude, only fallback to Claude's vision capabilities if needed), processing PDF documents, extracting structured data from media, creating images/videos from text prompts, or implementing multimodal AI features. Supports Gemini 3/2.5, Imagen 4, and Veo 3 models with context windows up to 2M tokens.
-license: MIT
-allowed-tools:
-  - Bash
-  - Read
-  - Write
-  - Edit
+version: 2.0.0
+description: '[AI & Tools] Process and generate multimedia content using Google Gemini API -- vision analysis, audio transcription, video processing, document extraction, image/video generation. Triggers on multimodal, vision API, image recognition, audio transcription, video analysis, gemini, imagen, document extraction.'
+allowed-tools: Bash, Read, Write, Edit
 ---
+
+> **[IMPORTANT]** Use `TaskCreate` to break ALL work into small tasks BEFORE starting — including tasks for each file read. This prevents context loss from long files. For simple tasks, AI MUST ask user whether to skip.
+
+## Quick Summary
+
+**Goal:** Process and generate multimedia content (images, audio, video, documents) using Google Gemini API via Python scripts.
+
+**Workflow:**
+
+1. **Identify Modality** — Match input type to task (analyze, transcribe, extract, generate)
+2. **Check Limits** — Inline max 20MB, File API max 2GB; split large audio at 15min chunks
+3. **Execute** — Run `gemini_batch_process.py` with appropriate task and files
+4. **Post-Process** — Format output as markdown with timestamps, save generated content
+
+**Key Rules:**
+
+- Requires `GEMINI_API_KEY` environment variable
+- Always request specific nodes/files, avoid full-file downloads
+- Use `media_optimizer.py` to compress/split files exceeding limits
+
+**Be skeptical. Apply critical thinking, sequential thinking. Every claim needs traced proof, confidence percentages (Idea should be more than 80%).**
 
 # AI Multimodal
 
-Process audio, images, videos, documents, and generate images/videos using Google Gemini's multimodal API.
+## Purpose
 
-## Setup
+Process audio, images, videos, and documents or generate images/videos using Google Gemini's multimodal API via bundled Python scripts.
+
+## When to Use
+
+- Analyzing images or screenshots (Gemini vision is preferred over Claude's built-in vision for complex tasks)
+- Transcribing audio files (meetings, podcasts, interviews)
+- Extracting data from PDFs, scanned documents, or charts
+- Processing video content (scene detection, temporal Q&A)
+- Generating images with Imagen 4 or videos with Veo 3
+- Converting documents to markdown with visual understanding
+
+## When NOT to Use
+
+- Simple text-only LLM calls -- use Claude directly
+- Reading a file Claude can already read (code, markdown, JSON) -- use `Read` tool
+- Building AI-powered application features -- use `api-design` or `frontend-design`
+- Music composition workflows -- load `references/music-generation.md` only when specifically requested
+- General prompt engineering -- use `ai-artist` skill
+
+## Prerequisites
 
 ```bash
-export GEMINI_API_KEY="your-key"  # Get from https://aistudio.google.com/apikey
+export GEMINI_API_KEY="your-key"  # From https://aistudio.google.com/apikey
 pip install google-genai python-dotenv pillow
+python scripts/check_setup.py  # Verify setup
 ```
 
-## Quick Start
+Optional: API key rotation for rate limits (set `GEMINI_API_KEY_2`, `GEMINI_API_KEY_3`).
 
-**Verify setup**: `python scripts/check_setup.py`
-**Analyze media**: `python scripts/gemini_batch_process.py --files <file> --task <analyze|transcribe|extract>`
-  - TIP: When you're asked to analyze an image, check if `gemini` command is available, then use `"<prompt to analyze image>" | gemini -y -m gemini-2.5-flash` command. If `gemini` command is not available, use `python scripts/gemini_batch_process.py --files <file> --task analyze` command.
-**Generate content**: `python scripts/gemini_batch_process.py --task <generate|generate-video> --prompt "description"`
+## Workflow
 
-> **Stdin support**: You can pipe files directly via stdin (auto-detects PNG/JPG/PDF/WAV/MP3).
-> - `cat image.png | python scripts/gemini_batch_process.py --task analyze --prompt "Describe this"`
-> - `python scripts/gemini_batch_process.py --files image.png --task analyze` (traditional)
+### Step 1: Identify Modality
+
+| Input Type           | Task                  | Command                 |
+| -------------------- | --------------------- | ----------------------- |
+| Image (PNG/JPG/WEBP) | Analyze, caption, OCR | `--task analyze`        |
+| Audio (WAV/MP3/AAC)  | Transcribe, summarize | `--task transcribe`     |
+| Video (MP4/MOV)      | Scene detection, Q&A  | `--task analyze`        |
+| PDF/Document         | Extract tables, forms | `--task extract`        |
+| Text prompt          | Generate image        | `--task generate`       |
+| Text prompt          | Generate video        | `--task generate-video` |
+
+### Step 2: Check Limits
+
+- **Inline upload**: max 20MB
+- **File API**: max 2GB (auto-used for large files)
+- **Audio transcription**: split at 15-minute chunks for full transcript
+- **Video transcription**: extract audio first, then split and transcribe
+- **Formats**: Audio (WAV/MP3/AAC, up to 9.5h), Images (PNG/JPEG/WEBP, up to 3.6k), Video (MP4/MOV, up to 6h), PDF (up to 1k pages)
+
+IF file exceeds limits, use `scripts/media_optimizer.py` to compress/split first.
+
+### Step 3: Execute
+
+**Quick check**: If `gemini` CLI is available, use: `"<prompt>" | gemini -y -m gemini-2.5-flash`
+
+**Standard**: Use the batch processing script:
+
+```bash
+# Analyze media
+python scripts/gemini_batch_process.py --files <file> --task <analyze|transcribe|extract>
+
+# Generate content
+python scripts/gemini_batch_process.py --task generate --prompt "description"
+python scripts/gemini_batch_process.py --task generate-video --prompt "description"
+```
+
+**Stdin support**: `cat image.png | python scripts/gemini_batch_process.py --task analyze --prompt "Describe this"`
+
+### Step 4: Post-Processing
+
+- For transcripts: output in markdown with `[HH:MM:SS -> HH:MM:SS]` timestamps
+- For document extraction: save as structured markdown under `docs/assets/`
+- For generated images/videos: save to working directory with descriptive filename
+
+### Step 5: Verification
+
+- Confirm output matches expected format and completeness
+- For long transcripts: verify no truncation occurred (check chunk boundaries)
+- For generated content: verify quality meets prompt requirements
 
 ## Models
 
-- **Image generation**: `imagen-4.0-generate-001` (standard), `imagen-4.0-ultra-generate-001` (quality), `imagen-4.0-fast-generate-001` (speed)
-- **Video generation**: `veo-3.1-generate-preview` (8s clips with audio)
-- **Analysis**: `gemini-2.5-flash` (recommended), `gemini-2.5-pro` (advanced)
+| Purpose                    | Model                           | Notes                   |
+| -------------------------- | ------------------------------- | ----------------------- |
+| Analysis (fast)            | `gemini-2.5-flash`              | Recommended default     |
+| Analysis (advanced)        | `gemini-2.5-pro`                | Complex reasoning tasks |
+| Image generation           | `imagen-4.0-generate-001`       | Standard quality        |
+| Image generation (quality) | `imagen-4.0-ultra-generate-001` | Best quality            |
+| Image generation (speed)   | `imagen-4.0-fast-generate-001`  | Fastest                 |
+| Video generation           | `veo-3.1-generate-preview`      | 8s clips with audio     |
 
-## Available Scripts
+## Scripts Reference
 
-> **IMPORTANT**: Only these 4 scripts exist. Do NOT invent or guess script names!
+- **`gemini_batch_process.py`** -- CLI orchestrator for all tasks, auto-resolves API keys and models
+- **`media_optimizer.py`** -- Compress/resize/split media to fit Gemini limits
+- **`document_converter.py`** -- Convert PDFs/images/Office docs to markdown
+- **`check_setup.py`** -- Verify environment, dependencies, and API key
 
-| Script | Purpose | Example |
-|--------|---------|---------|
-| `gemini_batch_process.py` | Main CLI for all tasks | `--files <file> --task analyze` |
-| `media_optimizer.py` | Compress/resize media | `--input <file> --max-size 10M` |
-| `document_converter.py` | Convert docs to markdown | `--files <pdf>` |
-| `check_setup.py` | Verify setup | (no args needed) |
+Use `--help` on any script for full options.
 
-### Script Details
+## Examples
 
-- **`gemini_batch_process.py`**: CLI orchestrator for `transcribe|analyze|extract|generate|generate-video` that auto-resolves API keys, picks sensible default models per task, streams files inline vs File API, and saves structured outputs (text/JSON/CSV/markdown plus generated assets) for Imagen 4 + Veo workflows.
-- **`media_optimizer.py`**: ffmpeg/Pillow-based preflight tool that compresses/resizes/converts audio, image, and video inputs, enforces target sizes/bitrates, splits long clips into hour chunks, and batch-processes directories so media stays within Gemini limits.
-- **`document_converter.py`**: Gemini-powered converter that uploads PDFs/images/Office docs, applies a markdown-preserving prompt, batches multiple files, auto-names outputs under `docs/assets`, and exposes CLI flags for model, prompt, auto-file naming, and verbose logging.
-- **`check_setup.py`**: Interactive readiness checker that verifies directory layout, centralized env resolver, required Python deps, and GEMINI_API_KEY availability/format, then performs a live Gemini API call and prints remediation instructions if anything fails.
+### Example 1: Transcribe a Meeting Recording
 
-Use `--help` for options.
+**Input**: 45-minute meeting audio file `meeting-2025-01-15.mp3`
 
-## References
+**Steps**:
 
-Load for detailed guidance:
+1. File is >15min, so split first:
+    ```bash
+    python scripts/media_optimizer.py --input meeting-2025-01-15.mp3 --split-duration 900
+    ```
+2. Transcribe each chunk:
+    ```bash
+    python scripts/gemini_batch_process.py --files meeting-part-*.mp3 --task transcribe
+    ```
+3. Output: Markdown file with timestamps, speaker detection, and metadata (duration, topics covered)
 
-| Topic | File | Description |
-|-------|------|-------------|
-| Audio | `references/audio-processing.md` | Audio formats and limits, transcription (timestamps, speakers, segments), non-speech analysis, File API vs inline input, TTS models, best practices, cost and token math, and concrete meeting/podcast/interview recipes. |
-| Images | `references/vision-understanding.md` | Vision capabilities overview, supported formats and models, captioning/classification/VQA, detection and segmentation, OCR and document reading, multi-image workflows, structured JSON output, token costs, best practices, and common product/screenshot/chart/scene use cases. |
-| Image Gen | `references/image-generation.md` | Imagen 4 and Gemini image model overview, generate_images vs generate_content APIs, aspect ratios and costs, text/image/both modalities, editing and composition, style and quality control, safety settings, best practices, troubleshooting, and common marketing/concept-art/UI scenarios. |
-| Video | `references/video-analysis.md` | Video analysis capabilities and supported formats, model/context choices, local/inline/YouTube inputs, clipping and FPS control, multi-video comparison, temporal Q&A and scene detection, transcription with visual context, token and cost guidance, and optimization/best-practice patterns. |
-| Video Gen | `references/video-generation.md` | Veo model matrix, text-to-video and image-to-video quick start, multi-reference and extension flows, camera and timing control, configuration (resolution, aspect, audio, safety), prompt design patterns, performance tips, limitations, troubleshooting, and cost estimates. |
+### Example 2: Extract Data from a PDF Report
 
-## Limits
+**Input**: Quarterly HR report PDF with tables, charts, and forms
 
-**Formats**: Audio (WAV/MP3/AAC, 9.5h), Images (PNG/JPEG/WEBP, 3.6k), Video (MP4/MOV, 6h), PDF (1k pages)
-**Size**: 20MB inline, 2GB File API
-**Important:** 
-- If you are going to generate a transcript of the audio, and the audio length is longer than 15 minutes, the transcript often gets truncated due to output token limits in the Gemini API response. To get the full transcript, you need to split the audio into smaller chunks (max 15 minutes per chunk) and transcribe each segment for a complete transcript.
-- If you are going to generate a transcript of the video and the video length is longer than 15 minutes, use ffmpeg to extract the audio from the video, truncate the audio to 15 minutes, transcribe all audio segments, and then combine the transcripts into a single transcript.
-**Transcription Output Requirements:**
-- Format: Markdown
-- Metadata: Duration, file size, generated date, description, file name, topics covered, etc.
-- Parts: from-to (e.g., 00:00-00:15), audio chunk name, transcript, status, etc.
-- Transcript format: 
-  ```
-  [HH:MM:SS -> HH:MM:SS] transcript content
-  [HH:MM:SS -> HH:MM:SS] transcript content
-  ...
-  ```
+**Steps**:
 
-## Resources
+1. Convert and extract:
+    ```bash
+    python scripts/document_converter.py --input quarterly-report.pdf --output docs/assets/
+    ```
+2. Output: Structured markdown with tables preserved, chart descriptions, and form field values extracted
 
-- [API Docs](https://ai.google.dev/gemini-api/docs/)
-- [Pricing](https://ai.google.dev/pricing)
+## Detailed References
+
+Load for in-depth guidance:
+
+| Topic                 | File                                 |
+| --------------------- | ------------------------------------ |
+| Audio processing      | `references/audio-processing.md`     |
+| Vision/image analysis | `references/vision-understanding.md` |
+| Image generation      | `references/image-generation.md`     |
+| Video analysis        | `references/video-analysis.md`       |
+| Video generation      | `references/video-generation.md`     |
+| Music generation      | `references/music-generation.md`     |
+
+## Related Skills
+
+- `ai-artist` -- for prompt engineering and optimization (not media processing)
+- `media-processing` -- for FFmpeg-based audio/video encoding without AI
+- `pdf-to-markdown` -- for simple PDF text extraction without vision AI
+
+---
+
+**IMPORTANT Task Planning Notes (MUST FOLLOW)**
+
+- Always plan and break work into many small todo tasks
+- Always add a final review todo task to verify work quality and identify fixes/enhancements

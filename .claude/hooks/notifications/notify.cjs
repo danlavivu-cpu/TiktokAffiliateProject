@@ -15,6 +15,23 @@ const { loadEnv } = require('./lib/env-loader.cjs');
 const PROVIDER_PREFIXES = ['TELEGRAM', 'DISCORD', 'SLACK'];
 
 /**
+ * Check if event is a permission/command approval prompt
+ * These should NOT trigger external notifications (user sees them in terminal)
+ * @see https://github.com/anthropics/claude-code/issues/11964
+ * @param {Object} input - Event data
+ * @returns {boolean} True if permission prompt (skip notification)
+ */
+function isPermissionPrompt(input) {
+  // Check notification_type (for future when bug #11964 is fixed)
+  if (input.notification_type === 'permission_prompt') {
+    return true;
+  }
+  // Fallback: check message content
+  const message = input.message || '';
+  return message.includes('permission') && message.includes('use');
+}
+
+/**
  * Read JSON from stdin
  * @returns {Promise<Object>} Parsed JSON input
  */
@@ -94,6 +111,12 @@ async function main() {
     // Load environment with cascade
     const cwd = input.cwd || process.cwd();
     const env = loadEnv(cwd);
+
+    // Skip permission/command approval prompts - user sees these in terminal
+    if (isPermissionPrompt(input)) {
+      console.error('[notify] Skipped: permission prompt');
+      process.exit(0);
+    }
 
     // Find and call enabled providers
     const results = [];

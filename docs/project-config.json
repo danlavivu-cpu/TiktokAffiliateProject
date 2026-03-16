@@ -1,0 +1,169 @@
+{
+  "_description": "Project-specific configuration consumed by .claude hooks at runtime. Update when adding services/apps.",
+  "schemaVersion": 2,
+  "project": {
+    "name": "TiktokAffiliateProject",
+    "description": "TikTok Shop affiliate marketing workspace — quản lý sản phẩm, kịch bản video, research, data và vận hành đội nhóm",
+    "languages": ["markdown", "csv"],
+    "packageManagers": []
+  },
+  "framework": {
+    "name": "content-workspace",
+    "backendPatternsDoc": "docs/project-reference/backend-patterns-reference.md",
+    "frontendPatternsDoc": "docs/project-reference/frontend-patterns-reference.md",
+    "codeReviewDoc": "docs/project-reference/code-review-rules.md",
+    "integrationTestDoc": "docs/project-reference/integration-test-reference.md",
+    "searchPatternKeywords": [
+      "san-pham",
+      "scripts",
+      "research",
+      "kịch bản",
+      "hook",
+      "problem",
+      "solution",
+      "demo",
+      "cta"
+    ]
+  },
+  "modules": [
+    {
+      "name": "san-pham",
+      "kind": "content-module",
+      "pathRegex": "san-pham[\\\\/]",
+      "description": "Thư mục sản phẩm affiliate — mỗi sản phẩm có README, research, và 5 kịch bản video",
+      "tags": ["product", "scripts", "affiliate"],
+      "meta": {
+        "templatePath": "san-pham/_template/",
+        "scriptFormats": [
+          "unboxing",
+          "review",
+          "before-after",
+          "tutorial",
+          "storyline"
+        ]
+      }
+    },
+    {
+      "name": "ideas",
+      "kind": "content-module",
+      "pathRegex": "ideas[\\\\/]",
+      "description": "Pool ý tưởng sản phẩm — đang xem xét và đã loại",
+      "tags": ["ideation", "pipeline"],
+      "meta": {}
+    },
+    {
+      "name": "research",
+      "kind": "content-module",
+      "pathRegex": "research[\\\\/]",
+      "description": "Market intelligence — competitor spy, trending, seasonal calendar",
+      "tags": ["research", "market-intel"],
+      "meta": {}
+    },
+    {
+      "name": "data",
+      "kind": "content-module",
+      "pathRegex": "data[\\\\/]",
+      "description": "Tracking performance — weekly report, product performance CSV",
+      "tags": ["analytics", "tracking"],
+      "meta": {}
+    },
+    {
+      "name": "ads",
+      "kind": "content-module",
+      "pathRegex": "ads[\\\\/]",
+      "description": "Quản lý quảng cáo — Spark Ads, VSA campaigns",
+      "tags": ["advertising", "spark-ads"],
+      "meta": {}
+    },
+    {
+      "name": "brand-relations",
+      "kind": "content-module",
+      "pathRegex": "brand-relations[\\\\/]",
+      "description": "Quan hệ brand/shop — contacts, target collaboration",
+      "tags": ["brand", "partnerships"],
+      "meta": {}
+    },
+    {
+      "name": "sop",
+      "kind": "content-module",
+      "pathRegex": "sop[\\\\/]",
+      "description": "Quy trình vận hành — checklist hàng tuần, checklist video",
+      "tags": ["operations", "sop", "checklist"],
+      "meta": {}
+    }
+  ],
+  "contextGroups": [
+    {
+      "name": "product-content",
+      "pathRegexes": ["san-pham[\\\\/]"],
+      "fileExtensions": [".md"],
+      "rules": [
+        "Kịch bản video theo cấu trúc: HOOK (0-3s) → PROBLEM (3-8s) → SOLUTION (8-15s) → DEMO (15-40s) → CTA (40-60s)",
+        "Sản phẩm WIN: hoa hồng ≥ 20%, đánh giá ≥ 4.5 sao, giá 100K-500K VND",
+        "Mỗi sản phẩm cần 5 kịch bản: unboxing, review, before-after, tutorial, storyline"
+      ]
+    },
+    {
+      "name": "market-research",
+      "pathRegexes": ["research[\\\\/]", "ideas[\\\\/]"],
+      "fileExtensions": [".md"],
+      "rules": [
+        "Dùng khung chấm điểm WIN (tổng 100 điểm) để đánh giá sản phẩm",
+        "Cập nhật trending hàng tuần",
+        "Chuẩn bị content trước mỗi dịp thời vụ ít nhất 2-3 tuần"
+      ]
+    },
+    {
+      "name": "performance-tracking",
+      "pathRegexes": ["data[\\\\/]"],
+      "fileExtensions": [".md", ".csv"],
+      "rules": [
+        "Dừng sản phẩm khi 3 video liên tiếp < 500 views hoặc conversion giảm > 50%",
+        "Quy tắc 80/20: 80% thời gian quay sản phẩm đã chứng minh, 20% test mới",
+        "KPIs: GMV, Revenue, Order volume, AOV hàng ngày; CAC, CTR hàng tuần"
+      ]
+    }
+  ],
+  "designSystem": {
+    "docsPath": "docs/project-reference/design-system",
+    "appMappings": []
+  },
+  "styling": {
+    "fileExtensions": [],
+    "guideDoc": "",
+    "appMap": {},
+    "patterns": []
+  },
+  "componentSystem": {
+    "selectorPrefixes": [],
+    "layerClassification": {}
+  },
+  "testing": {
+    "frameworks": [],
+    "filePatterns": {},
+    "commands": {}
+  },
+  "databases": {},
+  "messaging": {},
+  "api": {},
+  "infrastructure": {},
+  "referenceDocs": [
+    {
+      "filename": "project-structure-reference.md",
+      "purpose": "Cấu trúc project và directory tree"
+    },
+    {
+      "filename": "feature-docs-reference.md",
+      "purpose": "Hướng dẫn tạo documentation cho business features"
+    }
+  ],
+  "custom": {
+    "projectType": "content-workspace",
+    "language": "vietnamese",
+    "platform": "tiktok-shop-vietnam",
+    "videoStructure": "HOOK → PROBLEM → SOLUTION → DEMO → CTA",
+    "winScoreThreshold": 70,
+    "productPriceRange": "100K-500K VND",
+    "sparkAdsRule": "Chỉ boost video organic > 10,000 views VÀ đã có đơn"
+  }
+}
